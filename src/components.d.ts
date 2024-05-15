@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     Chart: typeof import('./components/Chart/index.vue')['default']
     Container: typeof import('./components/Container.vue')['default']
+    IframeGrid: typeof import('./components/IframeGrid.vue')['default']
     NavBar: typeof import('./components/NavBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -16,6 +17,7 @@ declare module 'vue' {
     VanButton: typeof import('vant/es')['Button']
     VanCalendar: typeof import('vant/es')['Calendar']
     VanCard: typeof import('vant/es')['Card']
+    VanCascader: typeof import('vant/es')['Cascader']
     VanCell: typeof import('vant/es')['Cell']
     VanCellGroup: typeof import('vant/es')['CellGroup']
     VanCol: typeof import('vant/es')['Col']

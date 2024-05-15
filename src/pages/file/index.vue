@@ -105,7 +105,7 @@ function onDateConfirm(values) {
 
     <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
       <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
-      <van-cell v-for="item in list" :key="item" value="内容" is-link :title="item" center>
+      <van-cell v-for="item in list" :key="item" value="内容" is-link :title="item" center to="/file/detail">
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
           <div>
