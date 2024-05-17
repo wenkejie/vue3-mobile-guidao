@@ -7,6 +7,8 @@ import 'virtual:uno.css'
 import '@/styles/app.less'
 import { i18n } from '@/utils/i18n'
 
+import draggable from 'vuedraggable'
+
 // Vant 桌面端适配
 import '@vant/touch-emulator'
 
@@ -28,5 +30,7 @@ app.use(head)
 app.use(router)
 app.use(pinia)
 app.use(i18n)
+
+app.use(draggable)
 
 app.mount('#app')
