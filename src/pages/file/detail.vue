@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { closeToast, showLoadingToast } from 'vant';
-
 import { getDepartments, GetUsers } from '@/api'
 
 definePage({
@@ -26,41 +24,11 @@ const personPicker = ref(false)
 const fieldValue = ref('');
 const cascaderValue = ref('');
 // 选项列表，children 代表子选项，支持多级嵌套
-const options = ref([]);
-const userOptions = ref([]);
-
-const items = [
-  {
-    text: '浙江',
-    children: [
-      { text: '杭州', id: 1 },
-      { text: '温州', id: 2 },
-      { text: '宁波', id: 3, disabled: true },
-    ],
-  },
-  {
-    text: '江苏',
-    children: [
-      { text: '南京', id: 4 },
-      { text: '无锡', id: 5 },
-      { text: '徐州', id: 6 },
-    ],
-  },
-  { text: '福建', disabled: true },
-];
 
 const treeOptions = ref([]);
 // const activeIds = ref([]);
 const activeIndex = ref(0);
 
-
-// 全部选项选择完毕后，会触发 finish 事件
-const onFinish = ({ selectedOptions }) => {
-  // console.log(selectedOptions[0].id,'id')
-  personInit(selectedOptions[0].id)
-  // personPicker.value = false;
-  // fieldValue.value = selectedOptions.map((option) => option.text).join('/');
-};
 
 const showOptions = ref(false);
 const showPopup = () => {
@@ -96,35 +64,6 @@ function departMentInit() {
   })
 }
 
-function personInit(id) {
-  if (id) {
-    GetUsers({ DepartmentId: id, Skip: 1, PageSize: 50 }).then((res) => {
-      userOptions.value = res
-      console.log(options.value)
-    })
-  }
-
-}
-
-function onChange(value) {
-  if (
-    value === options.value[0].value &&
-    options.value[0].children.length === 0
-  ) {
-    // 模拟数据请求
-    showLoadingToast('加载中...');
-    setTimeout(() => {
-      GetUsers({ parentId: options.value[0].id }).then((res) => {
-        options.value[0].children = res;
-      })
-      closeToast();
-    }, 1000);
-  }
-};
-function onFinish2(selectedOptions) {
-  // show.value = false;
-  fieldValue.value = selectedOptions.map((option) => option.text).join('/');
-};
 
 
 interface Item {
@@ -208,10 +147,10 @@ departMentInit()
         <van-cell-group inset>
           <van-field v-model="formInfo.dateTime" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间"
             @click="datePicker = true" />
-          <van-field v-model="formInfo.depart" is-link readonly name="area" label="部门选择" placeholder="点击下发人员"
-            @click="personPicker = true;" />
           <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
-            @click="personPicker = true; personInit()" />
+            @click="personPicker = true;" />
+          <!-- <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
+            @click="personPicker = true; personInit()" /> -->
         </van-cell-group>
         <div class="m-15">
           <van-button round block type="primary" native-type="submit">
@@ -219,20 +158,9 @@ departMentInit()
           </van-button>
         </div>
       </van-form>
-
     </van-popup>
-    <!-- <van-popup v-model:show="datePicker" position="bottom">
-      <van-date-picker @confirm="onConfirm" @cancel="datePicker = false" />
-    </van-popup> -->
     <van-calendar v-model:show="datePicker" type="range" @confirm="onDateConfirm" />
     <van-popup v-model:show="personPicker" position="bottom">
-      <!-- <van-cascader v-model="formInfo.person" title="下发设置" @change="onChange" :options="options" :field-names="{ 'text': 'fullName', 'value': 'id' }" @close="personPicker = false"
-        @finish="onFinish" /> -->
-      <!-- <van-picker-group title="预约时间" :tabs="['选择部门', '选择人员']" @confirm="onConfirm" @cancel="onCancel">
-        <van-cascader v-model="formInfo.person" @change="onFinish" :options="options"
-          :field-names="{ 'text': 'fullName', 'value': 'id' }" />
-        <van-cascader :options="userOptions" :field-names="{ 'text': 'firstName', 'value': 'userName' }" @finish="onFinish2" />
-      </van-picker-group> -->
       <van-tree-select v-model:active-id="activeIds" v-model:main-active-index="mainActiveIndex" :items="treeItems"
         @click-nav="onClickNav" @click-item="onClickItem" />
     </van-popup>
