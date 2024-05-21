@@ -46,6 +46,7 @@
 
   .item {
     padding: 10px 15px;
+
     .li-right {
       text-align: right;
     }
@@ -410,7 +411,6 @@
 <template>
   <div class="form-create-wrap">
     <van-loading v-if="loading" type="spinner" />
-
     <div class="wrap">
       <div class="content-wrap">
         <div class="item title" @click="focusTitle" :class="{ 'title-focus': focusIndex === 'title' }">
@@ -424,110 +424,55 @@
         </div>
 
         <div class="q-wrap">
-          <draggable v-for="(question, index) in formData.question" :key="index" :list="formData.question"
-            :move="onMove" @start="drag = true" @end="onEnd">
-            <div class="q-li" :class="{ 'q-li-focus': focusIndex === index }" @click="focusItem($event, index)">
-              <div class="drap-area">
-                <van-icon name="drag" />
-              </div>
-
-              <div v-for="(content, index1) in question.content" :key="index1">
-                <div class="q-item q-title-wrap">
-                  <div class="q-title">
-                    <div class="li">
-                      <textarea class="q-area" placeholder="问题" v-model="content.title" @focus="autoText"
-                        @input="autoText"></textarea>
-                    </div>
-                  </div>
-
-                  <van-dropdown-menu v-if="focusIndex === index" style="flex: 1;">
-                    <van-dropdown-item v-model="question.types" :options="selectOptions" />
-                  </van-dropdown-menu>
-                </div>
-
-                <div class="q-item" v-if="['下拉列表', '单选题', '多选题'].includes(question.types)">
-                  <div v-for="(item, i) in content.answer" :key="i" class="q-radio">
-                    <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ i + 1 }}.</div>
-                    <div v-else class="icon-radio"
-                      :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
-                    </div>
-                    <input class="radio-input" v-model="item.description" />
-                    <van-icon name="cross" v-if="focusIndex === index" @click="deleteRadioFn(index, index1, i)" />
-                  </div>
-
-                  <div class="q-radio" v-if="focusIndex === index">
-                    <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ content.answer.length + 1
-                      }}.</div>
-                    <div v-else class="icon-radio"
-                      :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
-                    </div>
-                    <input class="radio-add" v-model="addRadio" @focus="addRadioFn(index, index1)" />
-                  </div>
-                </div>
-                <div class="q-item text-wrap" v-if="question.types === '文本题'">文本回答</div>
-              </div>
-            </div>
-          </draggable>
-
-          <!-- <draggable  
-            group="people" 
-            @start="drag=true" 
-            @end="onEnd" 
-            v-for="(question, index) in formData.question" :key="index" :list="formData.question">
-            <template #item="{question}">
+          <van-form @submit="onSubmit">
+            <draggable v-for="(question, index) in formData.question" :key="index" :list="formData.question"
+              :move="onMove" @start="drag = true" @end="onEnd">
               <div class="q-li" :class="{ 'q-li-focus': focusIndex === index }" @click="focusItem($event, index)">
-              <div class="drap-area">
-                <van-icon name="drag" />
-              </div>
-
-              <div v-for="(content, index1) in question.content" :key="index1">
-                <div class="q-item q-title-wrap">
-                  <div class="q-title">
-                    <div class="li">
-                      <textarea class="q-area" placeholder="问题" v-model="content.title" @focus="autoText"
-                        @input="autoText"></textarea>
-                    </div>
-                  </div>
-
-                  <van-dropdown-menu v-if="focusIndex === index" style="flex: 1;">
-                    <van-dropdown-item v-model="question.types" :options="selectOptions" />
-                  </van-dropdown-menu>
+                <div class="drap-area">
+                  <van-icon name="drag" />
                 </div>
 
-                <div class="q-item" v-if="['下拉列表', '单选题', '多选题'].includes(question.types)">
-                  <div v-for="(item, i) in content.answer" :key="i" class="q-radio">
-                    <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ i + 1 }}.</div>
-                    <div v-else class="icon-radio"
-                      :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
-                    </div>
-                    <input class="radio-input" v-model="item.description" />
-                    <van-icon name="cross" v-if="focusIndex === index" @click="deleteRadioFn(index, index1, i)" />
-                  </div>
+                <div v-for="(content, index1) in question.content" :key="index1">
+                  <van-cell-group inset>
+                    <van-field class="form-cell-group" v-model="content.title" label="问题：" label-width="auto"
+                      @focus="autoText" @input="autoText" center clearable placeholder="请输入问题">
+                      <template #button>
+                        <van-dropdown-menu v-if="focusIndex === index">
+                          <van-dropdown-item v-model="question.types" :options="selectOptions" />
+                        </van-dropdown-menu>
+                      </template>
+                    </van-field>
+                    <div class="q-item" v-if="['下拉列表', '单选题', '多选题'].includes(question.types)">
+                      <div v-for="(item, i) in content.answer" :key="i" class="q-radio">
+                        <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ i + 1 }}.</div>
+                        <div v-else class="icon-radio"
+                          :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
+                        </div>
+                        <input class="radio-input" v-model="item.description" />
+                        <van-icon name="cross" v-if="focusIndex === index" @click="deleteRadioFn(index, index1, i)" />
+                      </div>
 
-                  <div class="q-radio" v-if="focusIndex === index">
-                    <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ content.answer.length + 1
-                      }}.</div>
-                    <div v-else class="icon-radio"
-                      :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
+                      <div class="q-radio" v-if="focusIndex === index">
+                        <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ content.answer.length
+      + 1
+                          }}.</div>
+                        <div v-else class="icon-radio"
+                          :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
+                        </div>
+                        <input class="radio-add" v-model="addRadio" @focus="addRadioFn(index, index1)" />
+                      </div>
                     </div>
-                    <input class="radio-add" v-model="addRadio" @focus="addRadioFn(index, index1)" />
-                  </div>
+                    <div class="q-item text-wrap" v-if="question.types === '文本题'">文本回答</div>
+                  </van-cell-group>
                 </div>
-                <div class="q-item text-wrap" v-if="question.types === '文本题'">文本回答</div>
               </div>
+            </draggable>
+            <div class="form-bottom">
+              <van-button round block type="primary" class="submit-btn" native-type="submit">
+                提交
+              </van-button>
             </div>
-            </template>
-          </draggable> -->
-
-          <div class="q-add" @click="addListFn">
-            <van-icon name="plus" />
-          </div>
-        </div>
-      </div>
-
-      <div class="form-sidebar" v-if="formData.question.length">
-        <div class="sidebar-li" @click="addListFn">
-          <i class="el-icon-plus"></i>
+          </van-form>
         </div>
       </div>
     </div>
@@ -579,7 +524,7 @@ const drag = ref(false);
 
 const auth = ref(false);
 const loading = ref(false);
-const selectOptions = ref([{ value: '单选题', text: '单选题' },{ value: '多选题', text: '多选题' }, { value: '文本题', text: '文本题' }]);
+const selectOptions = ref([{ value: '单选题', text: '单选题' }, { value: '多选题', text: '多选题' }, { value: '文本题', text: '文本题' }]);
 const langCode = ref(['cn', 'en', 'kr', 'jp', 'fr', 'de', 'ru', 'sp', 'po', 'it', 'nl', 'id', 'tr', 'thai', 'zh', 'fa', 'ro', 'ar']);
 const langList = ref(['中文', '英语', '韩语', '日语', '法语', '德语', '俄语', '西班牙语', '葡萄牙语', '意大利语', '荷兰语', '印度语', '土耳其语', '泰语', '繁体中文', '波斯语', '罗马尼亚语', '阿拉伯语']);
 const defaultLang = ref('英语');
@@ -624,6 +569,13 @@ const formData = ref<FormData>({
 });
 const editable = ref(true);
 const focusIndex = ref<number | string>(0);
+
+const showPicker = ref(false);
+
+const onConfirm = ({ selectedOptions }) => {
+  selectOptions.value = selectedOptions[0]?.text;
+  showPicker.value = false;
+};
 
 const onEnd = () => {
   drag.value = false;
@@ -710,6 +662,10 @@ const deleteListFn = (i: number) => {
 
 const saveFn = () => {
   // Save function implementation
+};
+
+const onSubmit = (values) => {
+  console.log('submit', JSON.stringify(formData.value));
 };
 
 const addLangFn = () => {
@@ -823,3 +779,48 @@ const getLanguageCode = (lang: string): string => {
   return langMap[lang] || 'cn';
 };
 </script>
+
+<style lang="less" scoped>
+.form-create-wrap {
+  min-width: 0;
+  padding: 20px 15px;
+  width: 100%;
+  text-align: center;
+}
+
+.form-create-wrap .wrap {
+  display: block;
+}
+
+.form-create-wrap .wrap .content-wrap {
+  margin-right: 0;
+}
+
+.form-create-wrap .q-wrap .q-li {
+  border-left: none;
+}
+
+.form-create-wrap .q-wrap .q-li-focus {
+  border-left: 2px solid #1989fa;
+  box-shadow: none;
+}
+
+.form-cell-group {
+  padding-left: 3px !important;
+
+  & /deep/ .van-dropdown-menu__bar {
+    box-shadow: none;
+    height: 25px;
+    font-size: 16px;
+  }
+}
+
+.form-bottom {
+  border-top: 1px dashed #ddd;
+  padding: 20px;
+}
+
+.form-create-wrap .q-wrap .text-wrap{
+  width: 100%;
+}
+</style>

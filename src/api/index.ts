@@ -12,3 +12,12 @@ export async function getDepartments(data): Promise<any> {
     data: data
   })
 }
+
+export async function GetUsers(query): Promise<any> {
+  return request({
+    url: '/api/User/GetUsers',
+    method: 'get',
+    params: query
+  })
+}
+
