@@ -24,7 +24,7 @@ declare module 'vue-router/auto-routes' {
     'circulate': RouteRecordInfo<'circulate', '/circulate', Record<never, never>, Record<never, never>>,
     'counter': RouteRecordInfo<'counter', '/counter', Record<never, never>, Record<never, never>>,
     'file': RouteRecordInfo<'file', '/file', Record<never, never>, Record<never, never>>,
-    '/file/createFrom': RouteRecordInfo<'/file/createFrom', '/file/createFrom', Record<never, never>, Record<never, never>>,
+    'createForm': RouteRecordInfo<'createForm', '/file/createFrom', Record<never, never>, Record<never, never>>,
     'detail': RouteRecordInfo<'detail', '/file/detail', Record<never, never>, Record<never, never>>,
     'KeepAlive': RouteRecordInfo<'KeepAlive', '/keepalive', Record<never, never>, Record<never, never>>,
     'mock': RouteRecordInfo<'mock', '/mock', Record<never, never>, Record<never, never>>,

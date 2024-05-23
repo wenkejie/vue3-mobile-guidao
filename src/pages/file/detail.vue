@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { getDepartments, GetUsers } from '@/api'
 
+import createFrom from './createFrom.vue';
+
 definePage({
   name: 'detail',
   meta: {
@@ -9,6 +11,19 @@ definePage({
     i18n: '文件信息',
   },
 })
+
+interface Item {
+  text: string;
+  children?: Array<{ text: string; id: number }>;
+  id?: number;
+}
+
+
+const mainActiveIndex = ref(0);
+const activeIds = ref<number[]>([]);
+const treeItems = ref<Item[]>([]);
+
+const activeNames = ref<string[]>([]);
 
 const { t } = useI18n()
 
@@ -20,6 +35,8 @@ const formInfo = ref({});
 
 const datePicker = ref(false)
 const personPicker = ref(false)
+
+const showCreateDialog = ref(true)
 
 const fieldValue = ref('');
 const cascaderValue = ref('');
@@ -34,6 +51,10 @@ const showOptions = ref(false);
 const showPopup = () => {
   showOptions.value = true;
 };
+
+const gotoCreateForm = () =>{
+
+}
 
 function seadFile() {
   console.log('onload')
@@ -59,23 +80,28 @@ function departMentInit() {
         id: element.id,
       })
     });
-    // personPicker.value = true;
-    console.log(treeItems.value, 'treeOptions.value')
   })
 }
 
 
+// 异步整体调用整个树形结构包括子集，请求过慢
+// const departMentInit = async () => {
+//   try {
+//     const res = await getDepartments({ parentId: "13" });
+//     treeItems.value = []; // 初始化treeItems
 
-interface Item {
-  text: string;
-  children?: Array<{ text: string; id: number }>;
-  id?: number;
-}
-
-
-const mainActiveIndex = ref(0);
-const activeIds = ref<number[]>([]);
-const treeItems = ref<Item[]>([]);
+//     for (const element of res) {
+//       const child = await loadChildren(element.id);
+//       treeItems.value.push({
+//         text: element.fullName,
+//         id: element.id,
+//         children: child
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error loading departments:", error);
+//   }
+// };
 
 const loadChildren = async (id: number) => {
   // 模拟异步加载数据
@@ -99,6 +125,7 @@ const loadChildren = async (id: number) => {
   });
 };
 
+// 点击加载子集事件
 const onClickNav = async (index: number) => {
   mainActiveIndex.value = index;
   const item = treeItems.value[index];
@@ -110,20 +137,20 @@ const onClickNav = async (index: number) => {
 };
 
 const onClickItem = (item: { id: number }) => {
-  // activeIds.value = [...activeIds.value].push(item.id)
-  // console.log(item.id,'item.id')
   const ids = [...activeIds.value]; // 深拷贝 activeIds.value
   // console.log(ids,'ids')
   const index = ids.indexOf(Number(item.id));
   // console.log(index,'index')
   if (index == -1) {
     ids.push(item.id);
+    return false
   } else {
     ids.splice(index, 1);
     console.log(activeIds.value,'activeIds.value')
     return false
   }
   activeIds.value = ids; // 更新 activeIds.value
+  formInfo.value.persons =  ids
   console.log(activeIds.value,'activeIds.value')
 };
 
@@ -134,8 +161,8 @@ departMentInit()
 <template>
   <Container>
     <div class="text-right mt-20">
-      <van-button type="primary" class="mr-5" size="small" @click="showPopup">下发</van-button>
-      <van-button type="warning" size="small">答题</van-button>
+      <van-button type="primary" class="important-mr-10" size="small" @click="showPopup">下发</van-button>
+      <van-button type="warning" size="small" to="/file/createFrom">答题</van-button>
     </div>
     <iframe class="mt-10" ref="iframe"
       src="http://172.20.153.9:8012/onlinePreview?url=aHR0cDovLzE3Mi4xNi43MC41MDo1MDAxL2FwaS9kb2N1bWVudC9mMmQ3ZjhiNi1iMDEwLTQwZTctODE2OC0yMjY3YmQxMjhjOTgvb2ZmaWNldmlld2VyP3Rva2VuPTE3NjZlMjQ2LTk5Y2UtNDE3OC1iODc2LTc5NWIzMWQ0NDQ3ZCZpc1ZlcnNpb249ZmFsc2UmZnVsbGZpbGVuYW1lPTIwMjTosaHlsbHpqazmi4kyLmRvY3g%3D"
@@ -147,7 +174,7 @@ departMentInit()
         <van-cell-group inset>
           <van-field v-model="formInfo.dateTime" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间"
             @click="datePicker = true" />
-          <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
+          <van-field v-model="activeIds" is-link readonly name="persons" label="人员选择" placeholder="点击下发人员"
             @click="personPicker = true;" />
           <!-- <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
             @click="personPicker = true; personInit()" /> -->
@@ -164,7 +191,10 @@ departMentInit()
       <van-tree-select v-model:active-id="activeIds" v-model:main-active-index="mainActiveIndex" :items="treeItems"
         @click-nav="onClickNav" @click-item="onClickItem" />
     </van-popup>
-
+    <!-- 动态组件 -->
+    <!-- <van-dialog v-model:show="showCreateDialog">
+      <component :is="createFrom"></component>
+    </van-dialog> -->
   </Container>
 </template>
 
