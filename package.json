@@ -22,6 +22,7 @@
     "@vant/use": "^1.6.0",
     "@vueuse/core": "^10.9.0",
     "axios": "^1.6.8",
+    "base64-js": "1.5.1",
     "echarts": "^5.5.0",
     "lodash-es": "^4.17.21",
     "nprogress": "^0.2.0",

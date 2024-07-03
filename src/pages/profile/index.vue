@@ -9,6 +9,8 @@ definePage({
 })
 
 const { t } = useI18n()
+
+const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
 </script>
 
 <template>
@@ -19,7 +21,7 @@ const { t } = useI18n()
         height="100"
         src="../../../public/img/cat.jpeg"
       />
-      <p>Orange</p>
+      <p>{{ userInfo.fullName }}</p>
       <div class="p10">
         <van-grid square>
           <van-grid-item icon="photo-o" text="我的下发" to="/profile/circulateList" />

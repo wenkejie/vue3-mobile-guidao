@@ -23,6 +23,8 @@ import 'vant/es/dialog/style'
 import 'vant/es/notify/style'
 import 'vant/es/image-preview/style'
 
+import formatDatePlugin from '@/utils/formatDate'
+
 const app = createApp(App)
 const head = createHead()
 
@@ -31,6 +33,6 @@ app.use(router)
 app.use(pinia)
 app.use(i18n)
 
-app.use(draggable)
+app.use(draggable).use(formatDatePlugin)
 
 app.mount('#app')

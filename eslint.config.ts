@@ -11,4 +11,7 @@ export default antfu({
   formatters: {
     css: true,
   },
+  rules: {
+    'no-unused-vars': 'off',
+  },
 })

@@ -18,7 +18,7 @@ const display = computed(() => {
         <div class="i-carbon:document" />
       </template>
     </van-tabbar-item>
-    <van-tabbar-item replace to="/circulate">
+    <van-tabbar-item replace to="/transform">
       {{ t('layouts.circulate') }}
       <template #icon>
         <div class="i-carbon:ibm-openshift-container-platform-on-vpc-for-regulated-industries" />

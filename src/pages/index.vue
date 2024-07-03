@@ -45,6 +45,7 @@ const menuItems = computed(() => ([
   { title: t('home.404Demo'), route: 'unknown' },
   { title: t('home.keepAlive'), route: 'keepalive' },
   { title: t('首页'), route: 'home' },
+  { title: t('登录'), route: 'login' },
 ]))
 </script>
 

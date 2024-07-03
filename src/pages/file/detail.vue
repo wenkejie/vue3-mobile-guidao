@@ -165,7 +165,7 @@ departMentInit()
       <van-button type="warning" size="small" to="/file/createFrom">答题</van-button>
     </div>
     <iframe class="mt-10" ref="iframe"
-      src="http://172.20.153.9:8012/onlinePreview?url=aHR0cDovLzE3Mi4xNi43MC41MDo1MDAxL2FwaS9kb2N1bWVudC9mMmQ3ZjhiNi1iMDEwLTQwZTctODE2OC0yMjY3YmQxMjhjOTgvb2ZmaWNldmlld2VyP3Rva2VuPTE3NjZlMjQ2LTk5Y2UtNDE3OC1iODc2LTc5NWIzMWQ0NDQ3ZCZpc1ZlcnNpb249ZmFsc2UmZnVsbGZpbGVuYW1lPTIwMjTosaHlsbHpqazmi4kyLmRvY3g%3D"
+      src="http://172.20.153.9:8012/onlinePreview?url=aHR0cDovLzE3Mi4xNi43MC41MDo1MDAxL2FwaS9kb2N1bWVudC8yY2FkNmY5MC04YjUzLTQ3MTUtOTlmMS0wNzU3OGE1MTE5NDMvb2ZmaWNldmlld2VyP3Rva2VuPTFiYzFlZjQxLThmYjQtNDJiZC05OTVmLTcxZmJhYzU2MGFkNyZpc1ZlcnNpb249ZmFsc2UmZnVsbGZpbGVuYW1lPea1i+ivlS5qcGc="
       width="100%" height="600px" style="border: 1px solid #ddd;" frameborder="0" allowfullscreen></iframe>
     <!-- 左侧弹出 -->
     <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '80%' }">
