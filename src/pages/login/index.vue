@@ -5,7 +5,7 @@ const router = useRouter()
 definePage({
     name: 'login',
     meta: {
-        level: 2,
+        level: 1,
         title: '登录',
         i18n: '登录',
     },
@@ -42,7 +42,7 @@ const onSubmit = () => {
 
 <template>
     <Container>
-        <h3 class="text-center">轨道交通学习传阅系统</h3>
+        <h3 class="text-center">文件传阅学习管理系统</h3>
         <div class="data-content bg-white dark:bg-[--van-background-2]">
             <van-form @submit="onSubmit">
                 <van-cell-group inset>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// import router from "@/router/index"
+
 definePage({
   name: 'profile',
   meta: {
@@ -9,8 +11,14 @@ definePage({
 })
 
 const { t } = useI18n()
+const router = useRouter()
 
 const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
+
+function loginOut() {
+  localStorage.clear()
+  router.replace('/login')
+}
 </script>
 
 <template>
@@ -21,10 +29,10 @@ const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
         height="100"
         src="../../../public/img/cat.jpeg"
       />
-      <p>{{ userInfo.fullName }}</p>
+      <p><span class="inline-block v-middle mr-10">{{ userInfo.fullName }}</span><van-button class="inline-block v-middle" type="danger" @click="loginOut" size="mini">登出</van-button></p>
       <div class="p10">
         <van-grid square>
-          <van-grid-item icon="photo-o" text="我的下发" to="/profile/circulateList" />
+          <!-- <van-grid-item icon="photo-o" text="我的下发" to="/profile/circulateList" /> -->
           <!-- <van-grid-item icon="photo-o" text="文字" />
           <van-grid-item icon="photo-o" text="文字" />
           <van-grid-item icon="photo-o" text="文字" /> -->

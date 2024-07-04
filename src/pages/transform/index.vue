@@ -6,7 +6,7 @@ definePage({
   meta: {
     level: 1,
     title: 'transform',
-    i18n: '文件',
+    i18n: '我的传阅',
   },
 })
 
@@ -21,9 +21,8 @@ const menuValue = ref(0)
 const switch1 = ref(false)
 const switch2 = ref(false)
 const options = [
-  { text: '全部商品', value: 0 },
-  { text: '新款商品', value: 1 },
-  { text: '活动商品', value: 2 },
+  { text: '未查阅', value: false },
+  { text: '已查阅', value: true },
 ]
 
 const state = reactive({
@@ -33,8 +32,8 @@ const state = reactive({
   queryParams: {
     Skip: 0,
     isAdmin: false,
-    IsFinished: false,
-    PageSize: 50
+    isFinished: false,
+    PageSize: 500
   }
 })
 const { queryParams, form, rules } = toRefs(state)
@@ -69,6 +68,10 @@ function getFileList() {
   })
 }
 
+function handelSearch(){
+  getFileList();
+} 
+
 function onConfirm() {
   itemRef.value.toggle()
   // 或者
@@ -91,12 +94,25 @@ getFileList()
 <template>
   <Container class="my-15 pb-52">
     <div class="search-grid">
-      <van-search v-model="value" placeholder="请输入搜索关键词" />
+      <van-search
+        v-model="queryParams.SearchQuery"
+        show-action
+        label="文件名"
+        placeholder="请输入搜索关键词"
+        @search="onSearch"
+      >
+        <template #action>
+          <div class="w-80 text-center" @click="handelSearch">搜索</div>
+        </template>
+      </van-search>
+      <van-dropdown-menu ref="menuRef">
+        <van-dropdown-item v-model="queryParams.isFinished" @change="handelSearch" :options="options" />
+      </van-dropdown-menu>
     </div>
 
     <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
       <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
-      <van-cell v-for="item in dataList" :key="item" value="内容" is-link :title="item.documentName" center :to="`/transform/detail?documentId=${item.documentId}&id=${item.id}&name=${item.documentName}`">
+      <van-cell v-for="item in dataList" :key="item" value="内容" is-link :title="item.documentName" center :to="`/transform/detail?documentId=${item.documentId}&id=${item.id}&name=${item.documentName}&isFinished=${item.isFinished}`">
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
           <div class="w-240">
@@ -105,7 +121,7 @@ getFileList()
               src="../../../public/img/CarbonDocumentWordProcessor.png" class="mr-5 inline-block v-middle"
             />
             <div class="inline-block v-middle">
-              <span class="block line-height-none">{{ item.documentName }}</span>
+              <span class="block line-height-none whitespace-nowrap overflow-hidden" style="text-overflow: ellipsis;width: 200px;">{{ item.documentName }}</span>
               <span class="mt-5 block c-gray line-height-none">{{ $formatDate(item.startDate, 'yyyy-MM-dd') }}~{{ $formatDate(item.endDate, 'yyyy-MM-dd') }}</span>
             </div>
           </div>

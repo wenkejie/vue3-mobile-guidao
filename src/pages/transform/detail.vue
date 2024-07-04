@@ -1,17 +1,17 @@
 <template>
   <Container>
-    <van-steps :active="active" class="mt10">
+    <van-steps :active="active" class="mt10" v-if="isFinished == false">
       <van-step>查看</van-step>
       <van-step v-if="hasQuestion">答题</van-step>
       <van-step>确认</van-step>
     </van-steps>
-    <div>
+    <!-- <div>
       阅读时间: {{ roundedReadingTime }} 秒
-    </div>
+    </div> -->
     <div class="iframe-grid mt-10">
       <iframe ref="iframe" :src="viewUrl" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
     </div>
-    <div class="text-right mt-20">
+    <div class="text-right mt-20" v-if="isFinished == false">
       <van-button type="primary" size="small" block @click="gotoAnsQues" v-if="hasQuestion && activeInfo === 1">答题</van-button>
       <van-button type="primary" size="small" block @click="ansFormSubmit" v-else>确认</van-button>
     </div>
@@ -77,6 +77,8 @@ const showOptions = ref(false);
 const showQuestions = ref(false);
 const viewUrl = ref('');
 const showPicker = ref(false);
+
+const isFinished = ref(false)
 
 const formData = ref({
   circulationDocId: "",
@@ -161,6 +163,7 @@ const onClickItem = (item) => {
 const handleView = () => {
   const _id = route.query.documentId;
   const _documentName = route.query.name;
+  isFinished.value = route.query.isFinished;
   getDocumentToken(_id).then((res) => {
     const fileToken = res.result;
     const apiUrl = 'http://172.16.70.50:5001/';
