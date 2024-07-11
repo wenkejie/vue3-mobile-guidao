@@ -9,7 +9,6 @@ import { createVitePlugins } from './build/vite'
 export default ({ mode }: ConfigEnv): UserConfig => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
-
   return {
     base: env.VITE_APP_PUBLIC_PATH,
     plugins: createVitePlugins(),
@@ -19,7 +18,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       port: 3000,
       proxy: {
         '/api': {
-          target: 'http://172.16.70.50:5001',
+          target: 'http://172.20.153.9:5001',
           ws: false,
           changeOrigin: true,
         },
@@ -28,12 +27,20 @@ export default ({ mode }: ConfigEnv): UserConfig => {
 
     resolve: {
       alias: {
-        '~@': path.join(__dirname, './src'),
-        '@': path.join(__dirname, './src'),
-        '~': path.join(__dirname, './src/assets'),
+        // '~@': path.join(__dirname, './src'),
+        // '@': path.join(__dirname, './src'),
+        // '~': path.join(__dirname, './src/assets'),
+        // '$': path.join(__dirname, './public'),
+        // 设置路径
+        '~': path.resolve(__dirname, './src/assets'),
+        // 设置别名
+        '@': path.resolve(__dirname, './src'),
+        '~@': path.resolve(__dirname, './src'),
+        '$': path.resolve(__dirname, './public'),
       },
     },
-
+    // 确保 Vite 正确加载 .env 文件
+    envDir: '.',
     css: {
       postcss: {
         plugins: [

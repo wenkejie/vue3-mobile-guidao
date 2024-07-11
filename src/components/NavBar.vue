@@ -6,7 +6,7 @@ function onBack() {
   if (window.history.state.back)
     history.back()
   else
-    router.replace('/login')
+    router.replace('/transform')
 }
 
 const { t } = useI18n()

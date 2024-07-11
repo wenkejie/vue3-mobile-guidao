@@ -36,3 +36,4 @@ app.use(i18n)
 app.use(draggable).use(formatDatePlugin)
 
 app.mount('#app')
+

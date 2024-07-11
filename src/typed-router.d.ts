@@ -27,7 +27,7 @@ declare module 'vue-router/auto-routes' {
     'createForm': RouteRecordInfo<'createForm', '/file/createFrom', Record<never, never>, Record<never, never>>,
     'detail': RouteRecordInfo<'detail', '/file/detail', Record<never, never>, Record<never, never>>,
     'KeepAlive': RouteRecordInfo<'KeepAlive', '/keepalive', Record<never, never>, Record<never, never>>,
-    'login': RouteRecordInfo<'login', '/login', Record<never, never>, Record<never, never>>,
+    'home2': RouteRecordInfo<'home2', '/login', Record<never, never>, Record<never, never>>,
     'mock': RouteRecordInfo<'mock', '/mock', Record<never, never>, Record<never, never>>,
     'profile': RouteRecordInfo<'profile', '/profile', Record<never, never>, Record<never, never>>,
     'circulateDetail': RouteRecordInfo<'circulateDetail', '/profile/circulateDetail', Record<never, never>, Record<never, never>>,
@@ -35,7 +35,7 @@ declare module 'vue-router/auto-routes' {
     'transform': RouteRecordInfo<'transform', '/transform', Record<never, never>, Record<never, never>>,
     'createForm': RouteRecordInfo<'createForm', '/transform/createFrom', Record<never, never>, Record<never, never>>,
     'detail': RouteRecordInfo<'detail', '/transform/detail', Record<never, never>, Record<never, never>>,
-    'detail2': RouteRecordInfo<'detail2', '/transform/detail copy', Record<never, never>, Record<never, never>>,
+    'detail2': RouteRecordInfo<'detail2', '/transform/detail2', Record<never, never>, Record<never, never>>,
     'unocss': RouteRecordInfo<'unocss', '/unocss', Record<never, never>, Record<never, never>>,
   }
 }

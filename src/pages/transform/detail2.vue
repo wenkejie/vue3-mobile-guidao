@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { getDepartments, GetUsers, getDocumentToken, getTransFormDetail, updateCirculationDocStudy } from '@/api'
-import { fromByteArray } from 'base64-js';
+import { fromByteArray } from 'base64-js'
 
-import createFrom from './createFrom.vue';
-import { showNotify } from 'vant';
+import { showNotify } from 'vant'
+import { GetUsers, getDepartments, getDocumentToken, getTransFormDetail, updateCirculationDocStudy } from '@/api'
 
 definePage({
   name: 'detail2',
@@ -15,56 +14,55 @@ definePage({
 })
 
 interface Item {
-  text: string;
-  children?: Array<{ text: string; id: number }>;
-  id?: number;
+  text: string
+  children?: Array<{ text: string, id: number }>
+  id?: number
 }
 
+const mainActiveIndex = ref(0)
+const activeIds = ref<number[]>([])
+const treeItems = ref<Item[]>([])
 
-const mainActiveIndex = ref(0);
-const activeIds = ref<number[]>([]);
-const treeItems = ref<Item[]>([]);
-
-const activeNames = ref<string[]>([]);
+const activeNames = ref<string[]>([])
 
 const { t } = useI18n()
 
 const setting = ref({
-  src: "https://m.baidu.com/"
+  src: 'https://m.baidu.com/',
 })
 
 const route = useRoute()
 
-const formInfo = ref({});
+const formInfo = ref({})
 
 const datePicker = ref(false)
 const personPicker = ref(false)
 
 const showCreateDialog = ref(true)
 
-const fieldValue = ref('');
-const cascaderValue = ref('');
+const fieldValue = ref('')
+const cascaderValue = ref('')
 // 选项列表，children 代表子选项，支持多级嵌套
 
-const treeOptions = ref([]);
+const treeOptions = ref([])
 // const activeIds = ref([]);
-const activeIndex = ref(0);
+const activeIndex = ref(0)
 
 const timeLimit = ref(0)
 
-const showOptions = ref(false);
-const showPopup = () => {
-  showOptions.value = true;
-};
+const showOptions = ref(false)
+function showPopup() {
+  showOptions.value = true
+}
 
-const showQuestions = ref(false);
-const showQuestionPopup = () => {
-  showQuestions.value = true;
-};
+const showQuestions = ref(false)
+function showQuestionPopup() {
+  showQuestions.value = true
+}
 
 const viewUrl = ref('')
 
-const gotoCreateForm = () => {
+function gotoCreateForm() {
 
 }
 
@@ -72,9 +70,9 @@ function seadFile() {
   console.log('onload')
 }
 
-const onSubmit = (values) => {
-  console.log('submit', formData.value);
-};
+function onSubmit(values) {
+  console.log('submit', formData.value)
+}
 
 const formatDate = date => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 function onDateConfirm(values) {
@@ -84,92 +82,91 @@ function onDateConfirm(values) {
 }
 
 function departMentInit() {
-  getDepartments({ parentId: "13" }).then((res) => {
+  getDepartments({ parentId: '13' }).then((res) => {
     // treeOptions.value = res
-    res.forEach(element => {
+    res.forEach((element) => {
       treeItems.value.push({
         text: element.fullName,
         id: element.id,
       })
-    });
+    })
   })
 }
 
-
-const loadChildren = async (id: number) => {
+async function loadChildren(id: number) {
   // 模拟异步加载数据
-  return new Promise<Item[]>(resolve => {
+  return new Promise<Item[]>((resolve) => {
     setTimeout(() => {
       GetUsers({ DepartmentId: id, Skip: 1, PageSize: 50 }).then((res) => {
-        let userArr = []
-        res.forEach(element => {
+        const userArr = []
+        res.forEach((element) => {
           userArr.push({ text: element.firstName, id: Number(element.userName) })
-        });
+        })
         console.log(userArr, 'userArr')
-        resolve(userArr);
+        resolve(userArr)
       })
-    }, 1000);
-  });
-};
+    }, 1000)
+  })
+}
 
 // 点击加载子集事件
-const onClickNav = async (index: number) => {
-  mainActiveIndex.value = index;
-  const item = treeItems.value[index];
+async function onClickNav(index: number) {
+  mainActiveIndex.value = index
+  const item = treeItems.value[index]
   if (!item.children) {
     // 只有在没有加载过 children 时才进行加载
-    const children = await loadChildren(item.id!);
-    item.children = children;
+    const children = await loadChildren(item.id!)
+    item.children = children
   }
-};
+}
 
-const onClickItem = (item: { id: number }) => {
-  const ids = [...activeIds.value]; // 深拷贝 activeIds.value
+function onClickItem(item: { id: number }) {
+  const ids = [...activeIds.value] // 深拷贝 activeIds.value
   // console.log(ids,'ids')
-  const index = ids.indexOf(Number(item.id));
+  const index = ids.indexOf(Number(item.id))
   // console.log(index,'index')
   if (index == -1) {
-    ids.push(item.id);
+    ids.push(item.id)
     return false
-  } else {
-    ids.splice(index, 1);
+  }
+  else {
+    ids.splice(index, 1)
     console.log(activeIds.value, 'activeIds.value')
     return false
   }
-  activeIds.value = ids; // 更新 activeIds.value
+  activeIds.value = ids // 更新 activeIds.value
   formInfo.value.persons = ids
   console.log(activeIds.value, 'activeIds.value')
-};
+}
 
 function handleView() {
-  let _id = route.query.documentId
-  let _documentName = route.query.name
+  const _id = route.query.documentId
+  const _documentName = route.query.name
   getDocumentToken(_id).then((res) => {
     // console.log(res, 'res')
-    let fileToken = res.result
+    const fileToken = res.result
 
-    const host = location.host;
-    const protocol = location.protocol;
-    const apiUrl = 'http://172.16.70.50:5001/';
-    const url = apiUrl === '/' ? `${protocol}//${host}/` : apiUrl;
+    const host = location.host
+    const protocol = location.protocol
+    const apiUrl = 'http://172.16.70.50:5001/'
+    const url = apiUrl === '/' ? `${protocol}//${host}/` : apiUrl
     // let originalString = `http://127.0.0.1:8887/api/document/${row.id}/download?token=${fileToken}&isVersion=true&fullfilename=${row.name}`;
-    let newUrl = `${url}api/document/${_id}/officeviewer?token=${fileToken}&isVersion=false&fullfilename=${_documentName}`
+    const newUrl = `${url}api/document/${_id}/officeviewer?token=${fileToken}&isVersion=false&fullfilename=${_documentName}`
     // console.log(newUrl)
-    let byteArray = new TextEncoder().encode(newUrl) // 将字符串转换为字节数组
+    const byteArray = new TextEncoder().encode(newUrl) // 将字符串转换为字节数组
     // console.log(byteArray, 'byteArray')
-    var stringData = fromByteArray(byteArray)
+    const stringData = fromByteArray(byteArray)
     // console.log(stringData, 'stringData')
 
     // let encodedString = window.btoa(stringData);
     // window.open('http://172.20.153.9:8012/onlinePreview?url=' + stringData)
-    viewUrl.value = 'http://172.20.153.9:8012/onlinePreview?url=' + stringData
+    viewUrl.value = `http://172.20.153.9:8012/onlinePreview?url=${stringData}`
   })
 }
 
-
 const formData = ref({
-  circulationDocId: "",
-  userAnswers: []
+  circulationDocId: '',
+  userAnswers: [],
 })
 const activeInfo = ref(1)
 
@@ -178,28 +175,27 @@ const hasquestion = ref(false)
 
 const studyInfo = ref({
   circulationDocId: '',
-  studyDuration: 0
-});
+  studyDuration: 0,
+})
 
-const quesTitleArr = ref([]);
-const questions = ref([]);
+const quesTitleArr = ref([])
+const questions = ref([])
 const curQuestion = ref([])
-const curIndex = ref(0)//当前选中的答案索引
+const curIndex = ref(0)// 当前选中的答案索引
 const curSelectLabel = ref([])
 
 const showPicker = ref(false)
 
-
-const handelSelect = (id,index) => {
+function handelSelect(id, index) {
   curIndex.value = index
   showPicker.value = true
   curQuestion.value = getOptions(id)
-};
+}
 
-const getOptions = (questionId) => {
-  const question = questions.value.find(q => q.questionId === questionId);
-  return question ? question.options : [];
-};
+function getOptions(questionId) {
+  const question = questions.value.find(q => q.questionId === questionId)
+  return question ? question.options : []
+}
 
 // let startTime = 0;
 // let interval = null;
@@ -220,41 +216,41 @@ const getOptions = (questionId) => {
 const startTime = ref(0)
 function startTracking() {
   if (!startTime.value) { // 确保只有在未开始计时时才记录开始时间
-    startTime.value = Date.now();
-    console.log(studyInfo.value.studyDuration,'startTime')
+    startTime.value = Date.now()
+    console.log(studyInfo.value.studyDuration, 'startTime')
   }
 }
 function stopTracking() {
   if (startTime.value) {
-    const endTime = Date.now();
-    const duration = (endTime - startTime.value) / 1000; // 转换为秒
-    studyInfo.value.studyDuration += duration;
-    startTime.value = 0; // 重置开始时间
-    console.log(studyInfo.value.studyDuration,'endTime')
+    const endTime = Date.now()
+    const duration = (endTime - startTime.value) / 1000 // 转换为秒
+    studyInfo.value.studyDuration += duration
+    startTime.value = 0 // 重置开始时间
+    console.log(studyInfo.value.studyDuration, 'endTime')
   }
 }
 
-const onConfirm = ({ selectedOptions }) => {
-  curSelectLabel.value[curIndex.value] = selectedOptions[0]?.description;
-  formData.value.userAnswers[curIndex.value].answerId = selectedOptions[0]?.id;
-  showPicker.value = false;
-};
+function onConfirm({ selectedOptions }) {
+  curSelectLabel.value[curIndex.value] = selectedOptions[0]?.description
+  formData.value.userAnswers[curIndex.value].answerId = selectedOptions[0]?.id
+  showPicker.value = false
+}
 
 const customFieldName = {
   text: 'description',
   value: 'id',
-};
+}
 
 // 重置数据表单
 function resetInfo() {
   formData.value = {
-    circulationDocId: "",
-    userAnswers: []
+    circulationDocId: '',
+    userAnswers: [],
   }
 
   studyInfo.value = {
-    circulationDocId: "",
-    studyDuration: 0
+    circulationDocId: '',
+    studyDuration: 0,
   }
   timeLimit.value = 0
   quesTitleArr.value = []
@@ -264,25 +260,26 @@ function resetInfo() {
 }
 
 function getDetailInfo() {
-  let _id = route.query.id
+  const _id = route.query.id
   getTransFormDetail({ id: _id }).then((res) => {
     // questionsForm.value = res.data.circulationQuestions
     // 处理响应数据
     formData.value.circulationDocId = res.data.id
     studyInfo.value.circulationDocId = res.data.id
     hasquestion.value = res.data.isHasQuestion
-    res.data.circulationQuestions.forEach(field => {
+    res.data.circulationQuestions.forEach((field) => {
       questions.value.push(
         {
           questionId: field.circulationQuestionAnswers[0].circulationQuestionId,
-          options: field.circulationQuestionAnswers
-        })
+          options: field.circulationQuestionAnswers,
+        },
+      )
       formData.value.userAnswers.push({
         questionId: field.circulationQuestionAnswers[0].circulationQuestionId,
-        answerId: ""
-      });
+        answerId: '',
+      })
       quesTitleArr.value.push(field.title)
-    });
+    })
     timeLimit.value = res.data.browseDuration
     // console.log(formData.value, 'formData.value')
     // console.log(questions.value, 'questions')
@@ -292,29 +289,29 @@ function getDetailInfo() {
 }
 getDetailInfo()
 
-function gotoAnsQues(){
+function gotoAnsQues() {
   // console.log(studyInfo.value.studyDuration,'studyInfo.value.studyDuration')
-  if(studyInfo.value.studyDuration > timeLimit.value){
+  if (studyInfo.value.studyDuration > timeLimit.value) {
     handelActiveInfo(2)
     showQuestionPopup()
-  }else{
-    showNotify({ type: 'danger', message: '学习时间不足'+timeLimit.value +'秒' });
   }
-  
+  else {
+    showNotify({ type: 'danger', message: `学习时间不足${timeLimit.value}秒` })
+  }
 }
 
 function handelActiveInfo(info) {
   // clearInterval(interval);
   studyInfo.value.studyDuration = Math.round(studyInfo.value.studyDuration) * 1000
   // console.log(studyInfo.value.studyDuration,'studyInfo.value.studyDuration')
-  updateCirculationDocStudy(studyInfo.value).then(res => {
-    if(res.statusCode == 200){
+  updateCirculationDocStudy(studyInfo.value).then((res) => {
+    if (res.statusCode == 200)
       activeInfo.value = info
       // resetInfo()
-    }else{
+
+    else
       console.log(res.msg)
       // resetInfo()
-    }
   })
 }
 
@@ -323,8 +320,9 @@ function ansFormSubmit() {
     handelActiveInfo(1)
     resetInfo()
     openFileView.value = false
-  } else {
-    updateCirculationDocAnswer(formData.value).then(res => {
+  }
+  else {
+    updateCirculationDocAnswer(formData.value).then((res) => {
       if (res.statusCode == 200) {
         ElMessage({
           message: '提交成功',
@@ -332,14 +330,14 @@ function ansFormSubmit() {
         })
         resetInfo()
         openFileView.value = false
-      } else {
+      }
+      else {
         ElMessage({
           message: res.msg,
           type: 'error',
         })
         activeInfo.value = 1
       }
-
     })
   }
 }
@@ -356,23 +354,29 @@ handleView()
       <van-step>确认</van-step>
     </van-steps>
     <div class="iframe-grid mt-10" @touchstart="startTracking" @touchend="stopTracking">
-      <iframe ref="iframe" :src="viewUrl" width="100%" height="500px"
-      frameborder="0" allowfullscreen></iframe>
+      <iframe
+        ref="iframe" :src="viewUrl" width="100%" height="500px"
+        frameborder="0" allowfullscreen
+      ></iframe>
     </div>
-    <div class="text-right mt-20">
+    <div class="mt-20 text-right">
       <!-- <van-button type="primary" class="important-mr-10" size="small" @click="showPopup">下发</van-button> -->
-      <van-button type="primary" size="small" block @click="gotoAnsQues" v-if="hasquestion == true && activeInfo == 1">答题</van-button>
-      <van-button type="primary" size="small" block @click="ansFormSubmit" v-else>确认</van-button>
+      <van-button v-if="hasquestion == true && activeInfo == 1" type="primary" size="small" block @click="gotoAnsQues">答题</van-button>
+      <van-button v-else type="primary" size="small" block @click="ansFormSubmit">确认</van-button>
     </div>
     <!-- 左侧弹出 -->
     <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '80%' }">
       <h3 class="text-center">下发设置</h3>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
-          <van-field v-model="formInfo.dateTime" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间"
-            @click="datePicker = true" />
-          <van-field v-model="activeIds" is-link readonly name="persons" label="人员选择" placeholder="点击下发人员"
-            @click="personPicker = true;" />
+          <van-field
+            v-model="formInfo.dateTime" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间"
+            @click="datePicker = true"
+          />
+          <van-field
+            v-model="activeIds" is-link readonly name="persons" label="人员选择" placeholder="点击下发人员"
+            @click="personPicker = true;"
+          />
           <!-- <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
             @click="personPicker = true; personInit()" /> -->
         </van-cell-group>
@@ -387,8 +391,10 @@ handleView()
       <h3 class="text-center">请根据文件内容答题</h3>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
-          <van-field v-for="(answer, index) in formData.userAnswers" disabled="true" @click="handelSelect(answer.questionId,index)" v-model="curSelectLabel[index]" :key="answer.questionId"
-            :label="quesTitleArr[index]+':'" label-width="120px" label-align="right">
+          <van-field
+            v-for="(answer, index) in formData.userAnswers" :key="answer.questionId" v-model="curSelectLabel[index]" disabled="true" :label="`${quesTitleArr[index]}:`"
+            label-width="120px" label-align="right" @click="handelSelect(answer.questionId, index)"
+          >
           </van-field>
           <!-- <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
             @click="personPicker = true; personInit()" /> -->
@@ -403,15 +409,17 @@ handleView()
     <van-popup v-model:show="showPicker" position="bottom">
       <van-picker
         :columns="curQuestion"
+        :columns-field-names="customFieldName"
         @confirm="onConfirm"
         @cancel="showPicker = false"
-        :columns-field-names="customFieldName"
       />
     </van-popup>
     <van-calendar v-model:show="datePicker" type="range" @confirm="onDateConfirm" />
     <van-popup v-model:show="personPicker" position="bottom">
-      <van-tree-select v-model:active-id="activeIds" v-model:main-active-index="mainActiveIndex" :items="treeItems"
-        @click-nav="onClickNav" @click-item="onClickItem" />
+      <van-tree-select
+        v-model:active-id="activeIds" v-model:main-active-index="mainActiveIndex" :items="treeItems"
+        @click-nav="onClickNav" @click-item="onClickItem"
+      />
     </van-popup>
     <!-- 动态组件 -->
     <!-- <van-dialog v-model:show="showCreateDialog">
@@ -431,7 +439,7 @@ handleView()
   color: #666;
 }
 
-.iframe-grid{
+.iframe-grid {
   position: relative;
   width: 100%;
   height: 500px;
@@ -444,12 +452,10 @@ handleView()
   }
 }
 
-
-
-.van-field--disabled .van-field__label{
+.van-field--disabled .van-field__label {
   color: #666 !important;
 }
-.van-field__control:disabled{
+.van-field__control:disabled {
   color: #666 !important;
 }
 </style>

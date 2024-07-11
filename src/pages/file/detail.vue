@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { getDepartments, GetUsers } from '@/api'
-
-import createFrom from './createFrom.vue';
+import { GetUsers, getDepartments } from '@/api'
 
 definePage({
   name: 'detail',
@@ -13,46 +11,44 @@ definePage({
 })
 
 interface Item {
-  text: string;
-  children?: Array<{ text: string; id: number }>;
-  id?: number;
+  text: string
+  children?: Array<{ text: string, id: number }>
+  id?: number
 }
 
+const mainActiveIndex = ref(0)
+const activeIds = ref<number[]>([])
+const treeItems = ref<Item[]>([])
 
-const mainActiveIndex = ref(0);
-const activeIds = ref<number[]>([]);
-const treeItems = ref<Item[]>([]);
-
-const activeNames = ref<string[]>([]);
+const activeNames = ref<string[]>([])
 
 const { t } = useI18n()
 
 const setting = ref({
-  src: "https://m.baidu.com/"
+  src: 'https://m.baidu.com/',
 })
 
-const formInfo = ref({});
+const formInfo = ref({})
 
 const datePicker = ref(false)
 const personPicker = ref(false)
 
 const showCreateDialog = ref(true)
 
-const fieldValue = ref('');
-const cascaderValue = ref('');
+const fieldValue = ref('')
+const cascaderValue = ref('')
 // 选项列表，children 代表子选项，支持多级嵌套
 
-const treeOptions = ref([]);
+const treeOptions = ref([])
 // const activeIds = ref([]);
-const activeIndex = ref(0);
+const activeIndex = ref(0)
 
+const showOptions = ref(false)
+function showPopup() {
+  showOptions.value = true
+}
 
-const showOptions = ref(false);
-const showPopup = () => {
-  showOptions.value = true;
-};
-
-const gotoCreateForm = () =>{
+function gotoCreateForm() {
 
 }
 
@@ -60,9 +56,9 @@ function seadFile() {
   console.log('onload')
 }
 
-const onSubmit = (values) => {
-  console.log('submit', values);
-};
+function onSubmit(values) {
+  console.log('submit', values)
+}
 
 const formatDate = date => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 function onDateConfirm(values) {
@@ -72,17 +68,16 @@ function onDateConfirm(values) {
 }
 
 function departMentInit() {
-  getDepartments({ parentId: "13" }).then((res) => {
+  getDepartments({ parentId: '13' }).then((res) => {
     // treeOptions.value = res
-    res.forEach(element => {
+    res.forEach((element) => {
       treeItems.value.push({
         text: element.fullName,
         id: element.id,
       })
-    });
+    })
   })
 }
-
 
 // 异步整体调用整个树形结构包括子集，请求过慢
 // const departMentInit = async () => {
@@ -103,17 +98,17 @@ function departMentInit() {
 //   }
 // };
 
-const loadChildren = async (id: number) => {
+async function loadChildren(id: number) {
   // 模拟异步加载数据
-  return new Promise<Item[]>(resolve => {
+  return new Promise<Item[]>((resolve) => {
     setTimeout(() => {
       GetUsers({ DepartmentId: id, Skip: 1, PageSize: 50 }).then((res) => {
-        let userArr = []
-        res.forEach(element => {
+        const userArr = []
+        res.forEach((element) => {
           userArr.push({ text: element.firstName, id: Number(element.userName) })
-        });
+        })
         console.log(userArr, 'userArr')
-        resolve(userArr);
+        resolve(userArr)
       })
 
       // resolve([
@@ -121,61 +116,67 @@ const loadChildren = async (id: number) => {
       //   { text: `子分类 ${id}-2`, id: id * 10 + 2 },
       // ]);
       // resolve(userArr);
-    }, 1000);
-  });
-};
+    }, 1000)
+  })
+}
 
 // 点击加载子集事件
-const onClickNav = async (index: number) => {
-  mainActiveIndex.value = index;
-  const item = treeItems.value[index];
+async function onClickNav(index: number) {
+  mainActiveIndex.value = index
+  const item = treeItems.value[index]
   if (!item.children) {
     // 只有在没有加载过 children 时才进行加载
-    const children = await loadChildren(item.id!);
-    item.children = children;
+    const children = await loadChildren(item.id!)
+    item.children = children
   }
-};
+}
 
-const onClickItem = (item: { id: number }) => {
-  const ids = [...activeIds.value]; // 深拷贝 activeIds.value
+function onClickItem(item: { id: number }) {
+  const ids = [...activeIds.value] // 深拷贝 activeIds.value
   // console.log(ids,'ids')
-  const index = ids.indexOf(Number(item.id));
+  const index = ids.indexOf(Number(item.id))
   // console.log(index,'index')
   if (index == -1) {
-    ids.push(item.id);
-    return false
-  } else {
-    ids.splice(index, 1);
-    console.log(activeIds.value,'activeIds.value')
+    ids.push(item.id)
     return false
   }
-  activeIds.value = ids; // 更新 activeIds.value
-  formInfo.value.persons =  ids
-  console.log(activeIds.value,'activeIds.value')
-};
-
+  else {
+    ids.splice(index, 1)
+    console.log(activeIds.value, 'activeIds.value')
+    return false
+  }
+  activeIds.value = ids // 更新 activeIds.value
+  formInfo.value.persons = ids
+  console.log(activeIds.value, 'activeIds.value')
+}
 
 departMentInit()
 </script>
 
 <template>
   <Container>
-    <div class="text-right mt-20">
+    <div class="mt-20 text-right">
       <van-button type="primary" class="important-mr-10" size="small" @click="showPopup">下发</van-button>
       <van-button type="warning" size="small" to="/file/createFrom">答题</van-button>
     </div>
-    <iframe class="mt-10" ref="iframe"
+    <iframe
+      ref="iframe" class="mt-10"
       src="http://172.20.153.9:8012/onlinePreview?url=aHR0cDovLzE3Mi4xNi43MC41MDo1MDAxL2FwaS9kb2N1bWVudC8yY2FkNmY5MC04YjUzLTQ3MTUtOTlmMS0wNzU3OGE1MTE5NDMvb2ZmaWNldmlld2VyP3Rva2VuPTFiYzFlZjQxLThmYjQtNDJiZC05OTVmLTcxZmJhYzU2MGFkNyZpc1ZlcnNpb249ZmFsc2UmZnVsbGZpbGVuYW1lPea1i+ivlS5qcGc="
-      width="100%" height="600px" style="border: 1px solid #ddd;" frameborder="0" allowfullscreen></iframe>
+      width="100%" height="600px" style="border: 1px solid #ddd;" frameborder="0" allowfullscreen
+    ></iframe>
     <!-- 左侧弹出 -->
     <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '80%' }">
       <h3 class="text-center">下发设置</h3>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
-          <van-field v-model="formInfo.dateTime" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间"
-            @click="datePicker = true" />
-          <van-field v-model="activeIds" is-link readonly name="persons" label="人员选择" placeholder="点击下发人员"
-            @click="personPicker = true;" />
+          <van-field
+            v-model="formInfo.dateTime" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间"
+            @click="datePicker = true"
+          />
+          <van-field
+            v-model="activeIds" is-link readonly name="persons" label="人员选择" placeholder="点击下发人员"
+            @click="personPicker = true;"
+          />
           <!-- <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
             @click="personPicker = true; personInit()" /> -->
         </van-cell-group>
@@ -188,8 +189,10 @@ departMentInit()
     </van-popup>
     <van-calendar v-model:show="datePicker" type="range" @confirm="onDateConfirm" />
     <van-popup v-model:show="personPicker" position="bottom">
-      <van-tree-select v-model:active-id="activeIds" v-model:main-active-index="mainActiveIndex" :items="treeItems"
-        @click-nav="onClickNav" @click-item="onClickItem" />
+      <van-tree-select
+        v-model:active-id="activeIds" v-model:main-active-index="mainActiveIndex" :items="treeItems"
+        @click-nav="onClickNav" @click-item="onClickItem"
+      />
     </van-popup>
     <!-- 动态组件 -->
     <!-- <van-dialog v-model:show="showCreateDialog">

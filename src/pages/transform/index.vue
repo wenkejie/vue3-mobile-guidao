@@ -27,14 +27,15 @@ const options = [
 
 const state = reactive({
   form: {
-    storeType: 1
+    storeType: 1,
   },
   queryParams: {
     Skip: 0,
     isAdmin: false,
     isFinished: false,
-    PageSize: 500
-  }
+    PageSize: 20,
+    SearchQuery: '',
+  },
 })
 const { queryParams, form, rules } = toRefs(state)
 
@@ -50,12 +51,11 @@ function handelClosed() {
   menuRef.value?.close()
 }
 
-// function onLoad() {
-//   queryParams.value.Skip = 0
-//   getFileList()
-// }
+function onLoad() {
+  // queryParams.value.Skip = 0
+  getFileList()
+}
 
-// eslint-disable-next-line unused-imports/no-unused-vars
 function getFileList() {
   // let rootId = localStorage.getItem('rootId') ? localStorage.getItem('rootId') : 'a4d06132-d76c-49b5-8472-2bf78ac4147e'
   loading.value = true
@@ -68,9 +68,20 @@ function getFileList() {
   })
 }
 
-function handelSearch(){
-  getFileList();
-} 
+function handelCancel() {
+  queryParams.value = {
+    Skip: 0,
+    isAdmin: false,
+    isFinished: false,
+    PageSize: 20,
+    SearchQuery: '',
+  },
+  getFileList()
+}
+
+function handelSearch() {
+  getFileList()
+}
 
 function onConfirm() {
   itemRef.value.toggle()
@@ -88,6 +99,17 @@ function onDateConfirm(values) {
   date.value = `${formatDate(start)} ~ ${formatDate(end)}`
 }
 
+const baseUrl = ref(`${import.meta.env.VITE_APP_PUBLIC_PATH}`)
+
+function getFileIcon(type) {
+  if (type === '.png' || type === '.jpg')
+    return `${baseUrl.value}/img/CarbonImage.png`
+  else if (type === '.word')
+    return `${baseUrl.value}/img/CarbonDocumentWordProcessor.png`
+  else
+    return `${baseUrl.value}/img/CarbonDocumentPdf.png`
+}
+
 getFileList()
 </script>
 
@@ -98,31 +120,28 @@ getFileList()
         v-model="queryParams.SearchQuery"
         show-action
         label="文件名"
+        @cancel="handelCancel"
+        @search="handelSearch"
         placeholder="请输入搜索关键词"
-        @search="onSearch"
-      >
-        <template #action>
-          <div class="w-80 text-center" @click="handelSearch">搜索</div>
-        </template>
-      </van-search>
+      ></van-search>
       <van-dropdown-menu ref="menuRef">
-        <van-dropdown-item v-model="queryParams.isFinished" @change="handelSearch" :options="options" />
+        <van-dropdown-item v-model="queryParams.isFinished" :options="options" @change="handelSearch" />
       </van-dropdown-menu>
     </div>
 
     <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
       <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
-      <van-cell v-for="item in dataList" :key="item" value="内容" is-link :title="item.documentName" center :to="`/transform/detail?documentId=${item.documentId}&id=${item.id}&name=${item.documentName}&isFinished=${item.isFinished}`">
+      <van-cell v-for="item in dataList" :key="item" value="内容" is-link :title="item.documentName" center :to="`/transform/detail?documentId=${item.documentId}&id=${item.id}&name=${item.documentName}&isFinished=${Boolean(item.isFinished)}`">
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
           <div class="w-240">
             <van-image
               width="2.6rem" height="2.6rem" fit="contain" position="left"
-              src="../../../public/img/CarbonDocumentWordProcessor.png" class="mr-5 inline-block v-middle"
+              :src="getFileIcon(item.documentExtension)" class="mr-5 inline-block v-middle"
             />
             <div class="inline-block v-middle">
-              <span class="block line-height-none whitespace-nowrap overflow-hidden" style="text-overflow: ellipsis;width: 200px;">{{ item.documentName }}</span>
-              <span class="mt-5 block c-gray line-height-none">{{ $formatDate(item.startDate, 'yyyy-MM-dd') }}~{{ $formatDate(item.endDate, 'yyyy-MM-dd') }}</span>
+              <span class="block overflow-hidden whitespace-nowrap line-height-none" style="text-overflow: ellipsis;width: 200px;">{{ item.documentName }}</span>
+              <span class="mt-5 block c-gray line-height-none font-size-12">截止日:{{ $formatDate(item.endDate, 'yyyy-MM-dd HH:mm') }}</span>
             </div>
           </div>
         </template>

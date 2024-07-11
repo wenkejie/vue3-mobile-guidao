@@ -8,69 +8,68 @@ definePage({
   },
 })
 
-
 interface Answer {
-  answer_id: number;
-  description: string;
+  answer_id: number
+  description: string
 }
 
 interface LineAnswer {
-  line_value: number;
-  line_end_value: number;
-  line_tag: string;
-  line_end_tag: string;
+  line_value: number
+  line_end_value: number
+  line_tag: string
+  line_end_tag: string
 }
 
 interface Content {
-  language: string;
-  title: string;
-  answer: Answer[];
-  line_answer: LineAnswer;
-  text_answer: string;
+  language: string
+  title: string
+  answer: Answer[]
+  line_answer: LineAnswer
+  text_answer: string
 }
 
 interface Question {
-  question_id: number;
-  types: string;
-  is_required: boolean;
-  content: Content[];
+  question_id: number
+  types: string
+  is_required: boolean
+  content: Content[]
 }
 
 interface Name {
-  questionnaire_name: string;
-  desc: string;
-  language: string;
+  questionnaire_name: string
+  desc: string
+  language: string
 }
 
 interface FormData {
-  display_name: string;
-  name: Name[];
-  repeat_submit: boolean;
-  question: Question[];
+  display_name: string
+  name: Name[]
+  repeat_submit: boolean
+  question: Question[]
 }
 
-const drag = ref(false);
+const drag = ref(false)
 
-const auth = ref(false);
-const loading = ref(false);
-const selectOptions = ref([{ value: '单选题', text: '单选题' }, { value: '多选题', text: '多选题' }, { value: '文本题', text: '文本题' }]);
-const langCode = ref(['cn', 'en', 'kr', 'jp', 'fr', 'de', 'ru', 'sp', 'po', 'it', 'nl', 'id', 'tr', 'thai', 'zh', 'fa', 'ro', 'ar']);
-const langList = ref(['中文', '英语', '韩语', '日语', '法语', '德语', '俄语', '西班牙语', '葡萄牙语', '意大利语', '荷兰语', '印度语', '土耳其语', '泰语', '繁体中文', '波斯语', '罗马尼亚语', '阿拉伯语']);
-const defaultLang = ref('英语');
-const tabLang = ref('中文');
-const editableTabs = ref(['中文']);
-const addLangVisible = ref(false);
-const defaultOption = ref('单选题');
-const addRadio = ref('添加选项');
-const lineOptions = ref([0, 1]);
-const lineEndOptions = ref([5, 10]); // 假设 lineEndOptions 初始值为 [5, 10]
-const langArray = ref<string[]>([]);
+const auth = ref(false)
+const loading = ref(false)
+const selectOptions = ref([{ value: '单选题', text: '单选题' }, { value: '多选题', text: '多选题' }, { value: '文本题', text: '文本题' }])
+const langCode = ref(['cn', 'en', 'kr', 'jp', 'fr', 'de', 'ru', 'sp', 'po', 'it', 'nl', 'id', 'tr', 'thai', 'zh', 'fa', 'ro', 'ar'])
+const langList = ref(['中文', '英语', '韩语', '日语', '法语', '德语', '俄语', '西班牙语', '葡萄牙语', '意大利语', '荷兰语', '印度语', '土耳其语', '泰语', '繁体中文', '波斯语', '罗马尼亚语', '阿拉伯语'])
+const defaultLang = ref('英语')
+const tabLang = ref('中文')
+const editableTabs = ref(['中文'])
+const addLangVisible = ref(false)
+const defaultOption = ref('单选题')
+const addRadio = ref('添加选项')
+const lineOptions = ref([0, 1])
+const lineEndOptions = ref([5, 10]) // 假设 lineEndOptions 初始值为 [5, 10]
+const langArray = ref<string[]>([])
 const formData = ref<FormData>({
   display_name: '',
   name: [{
     questionnaire_name: '',
     desc: '',
-    language: 'cn'
+    language: 'cn',
   }],
   repeat_submit: false,
   question: [{
@@ -83,166 +82,169 @@ const formData = ref<FormData>({
         title: '',
         answer: [{
           answer_id: 1,
-          description: '选项1'
+          description: '选项1',
         }],
         line_answer: {
           line_value: 1,
           line_end_value: 5,
           line_tag: '',
-          line_end_tag: ''
+          line_end_tag: '',
         },
-        text_answer: ''
-      }
-    ]
-  }]
-});
-const editable = ref(true);
-const focusIndex = ref<number | string>(0);
+        text_answer: '',
+      },
+    ],
+  }],
+})
+const editable = ref(true)
+const focusIndex = ref<number | string>(0)
 
-const showPicker = ref(false);
+const showPicker = ref(false)
 
-const onConfirm = ({ selectedOptions }) => {
-  selectOptions.value = selectedOptions[0]?.text;
-  showPicker.value = false;
-};
+function onConfirm({ selectedOptions }) {
+  selectOptions.value = selectedOptions[0]?.text
+  showPicker.value = false
+}
 
-const onEnd = () => {
-  drag.value = false;
-};
+function onEnd() {
+  drag.value = false
+}
 
-const onMove = ({ relatedContext, draggedContext }: { relatedContext: any, draggedContext: any }) => {
-  const relatedIndex = relatedContext.index;
-  const index = draggedContext.index;
-  relatedContext.element.question_id = index + 1;
-  draggedContext.element.question_id = relatedIndex + 1;
-};
+function onMove({ relatedContext, draggedContext }: { relatedContext: any, draggedContext: any }) {
+  const relatedIndex = relatedContext.index
+  const index = draggedContext.index
+  relatedContext.element.question_id = index + 1
+  draggedContext.element.question_id = relatedIndex + 1
+}
 
-const focusTitle = (event: Event) => {
-  const classList = (event.target as HTMLElement).classList;
-  if (classList.contains('add-list') || classList.contains('el-icon-plus')) return;
-  focusIndex.value = 'title';
-};
+function focusTitle(event: Event) {
+  const classList = (event.target as HTMLElement).classList
+  if (classList.contains('add-list') || classList.contains('el-icon-plus'))
+    return
+  focusIndex.value = 'title'
+}
 
-const focusItem = (event: Event, i: number) => {
-  const classList = (event.target as HTMLElement).classList;
-  if (classList.contains('el-icon-delete') || classList.contains('icon-copy') || focusIndex.value === i) return;
-  focusIndex.value = i;
-};
+function focusItem(event: Event, i: number) {
+  const classList = (event.target as HTMLElement).classList
+  if (classList.contains('el-icon-delete') || classList.contains('icon-copy') || focusIndex.value === i)
+    return
+  focusIndex.value = i
+}
 
-const addRadioFn = (i: number, j: number) => {
-  const list = formData.value.question[i].content[j].answer;
-  addFormFn(list);
-};
+function addRadioFn(i: number, j: number) {
+  const list = formData.value.question[i].content[j].answer
+  addFormFn(list)
+}
 
-const deleteRadioFn = (i: number, j: number, k: number) => {
-  formData.value.question[i].content[j].answer.splice(k, 1);
-};
+function deleteRadioFn(i: number, j: number, k: number) {
+  formData.value.question[i].content[j].answer.splice(k, 1)
+}
 
-const addFormFn = (list: Answer[]) => {
-  const index = list.length ? parseInt(list[list.length - 1].description.substr(2)) + 1 : 1;
-  const text = `选项${index}`;
-  list.push({ answer_id: list.length + 1, description: text });
+function addFormFn(list: Answer[]) {
+  const index = list.length ? Number.parseInt(list[list.length - 1].description.substr(2)) + 1 : 1
+  const text = `选项${index}`
+  list.push({ answer_id: list.length + 1, description: text })
   nextTick(() => {
-    const input = document.querySelectorAll<HTMLInputElement>('.radio-input');
-    input[input.length - 1].focus();
-  });
-};
+    const input = document.querySelectorAll<HTMLInputElement>('.radio-input')
+    input[input.length - 1].focus()
+  })
+}
 
-const copyListFn = (index: number) => {
-  const question = formData.value.question[index];
-  const newQuestion = JSON.parse(JSON.stringify(question));
-  formData.value.question.splice(index, 0, newQuestion);
-  focusIndex.value = formData.value.question.length - 1;
-};
+function copyListFn(index: number) {
+  const question = formData.value.question[index]
+  const newQuestion = JSON.parse(JSON.stringify(question))
+  formData.value.question.splice(index, 0, newQuestion)
+  focusIndex.value = formData.value.question.length - 1
+}
 
-const addListFn = () => {
+function addListFn() {
   const codeList = editableTabs.value.map((i) => {
-    return langCode.value[langList.value.indexOf(i)];
-  });
-  const contentList = codeList.map((i) => ({
+    return langCode.value[langList.value.indexOf(i)]
+  })
+  const contentList = codeList.map(i => ({
     language: i,
     title: '',
     answer: [{
       answer_id: 1,
-      description: '选项1'
+      description: '选项1',
     }],
     line_answer: {
       line_value: 1,
       line_end_value: 5,
       line_tag: '',
-      line_end_tag: ''
+      line_end_tag: '',
     },
-    text_answer: ''
-  }));
+    text_answer: '',
+  }))
   const list: Question = {
     question_id: formData.value.question.length + 1,
     types: '单选题',
     is_required: false,
-    content: contentList
-  };
-  formData.value.question.push(list);
-  focusIndex.value = formData.value.question.length - 1;
-};
+    content: contentList,
+  }
+  formData.value.question.push(list)
+  focusIndex.value = formData.value.question.length - 1
+}
 
-const deleteListFn = (i: number) => {
-  formData.value.question.splice(i, 1);
-  focusIndex.value = i === 0 && formData.value.question.length > 0 ? i : i - 1;
-};
+function deleteListFn(i: number) {
+  formData.value.question.splice(i, 1)
+  focusIndex.value = i === 0 && formData.value.question.length > 0 ? i : i - 1
+}
 
-const saveFn = () => {
+function saveFn() {
   // Save function implementation
-};
+}
 
-const onSubmit = (values) => {
-  console.log('submit', JSON.stringify(formData.value));
-};
+function onSubmit(values) {
+  console.log('submit', JSON.stringify(formData.value))
+}
 
-const addLangFn = () => {
-  const value = defaultLang.value;
-  if (editableTabs.value.indexOf(value) > -1) {
+function addLangFn() {
+  const value = defaultLang.value
+  if (editableTabs.value.includes(value)) {
     Toast({
       type: 'warning',
-      message: `语言：${value}已经添加过了，请检查一下哦！`
-    });
-  } else {
-    editableTabs.value.push(value);
-    tabLang.value = value;
-    addLangDataFn(value);
+      message: `语言：${value}已经添加过了，请检查一下哦！`,
+    })
   }
-  addLangVisible.value = false;
-};
+  else {
+    editableTabs.value.push(value)
+    tabLang.value = value
+    addLangDataFn(value)
+  }
+  addLangVisible.value = false
+}
 
-const addLangDataFn = (value: string) => {
-  const code = langCode.value[langList.value.indexOf(value)];
+function addLangDataFn(value: string) {
+  const code = langCode.value[langList.value.indexOf(value)]
   formData.value.question.forEach((question) => {
     const content: Content = {
       language: code,
       title: '',
       answer: [{
         answer_id: 1,
-        description: '选项1'
+        description: '选项1',
       }],
       line_answer: {
         line_value: 1,
         line_end_value: 5,
         line_tag: '',
-        line_end_tag: ''
+        line_end_tag: '',
       },
-      text_answer: ''
-    };
-    question.content.push(content);
-  });
+      text_answer: '',
+    }
+    question.content.push(content)
+  })
   formData.value.name.push({
     questionnaire_name: '',
     desc: '',
-    language: code
-  });
-};
+    language: code,
+  })
+}
 
-const handleTabsEdit = (targetName: string, action: string) => {
-  if (action === 'add') {
-    addLangVisible.value = true;
-  }
+function handleTabsEdit(targetName: string, action: string) {
+  if (action === 'add')
+    addLangVisible.value = true
+
   if (action === 'remove') {
     Dialog.confirm({
       title: ' ',
@@ -253,38 +255,38 @@ const handleTabsEdit = (targetName: string, action: string) => {
       closeOnClickModal: false,
       beforeClose: (action, instance, done) => {
         const closeFn = () => {
-          instance.confirmButtonLoading = false;
-          instance.confirmButtonText = '确定';
-        };
+          instance.confirmButtonLoading = false
+          instance.confirmButtonText = '确定'
+        }
         if (action === 'confirm') {
-          const tabs = editableTabs.value;
-          let activeName = tabLang.value;
+          const tabs = editableTabs.value
+          let activeName = tabLang.value
           if (activeName === targetName) {
             tabs.forEach((tab, index) => {
               if (tab === targetName) {
-                const nextTab = tabs[index + 1] || tabs[index - 1];
-                if (nextTab) {
-                  activeName = nextTab;
-                }
+                const nextTab = tabs[index + 1] || tabs[index - 1]
+                if (nextTab)
+                  activeName = nextTab
               }
-            });
+            })
           }
-          tabLang.value = activeName;
-          editableTabs.value = tabs.filter(tab => tab !== targetName);
-          closeFn();
-          done();
-        } else {
-          closeFn();
-          done();
+          tabLang.value = activeName
+          editableTabs.value = tabs.filter(tab => tab !== targetName)
+          closeFn()
+          done()
         }
-      }
+        else {
+          closeFn()
+          done()
+        }
+      },
     }).then(() => {
     }).catch(() => {
-    });
+    })
   }
-};
+}
 
-const getLanguageCode = (lang: string): string => {
+function getLanguageCode(lang: string): string {
   const langMap: { [key: string]: string } = {
     en: 'en',
     zh: 'zh',
@@ -304,9 +306,9 @@ const getLanguageCode = (lang: string): string => {
     fa: 'fa',
     ro: 'ro',
     ar: 'ar',
-  };
-  return langMap[lang] || 'cn';
-};
+  }
+  return langMap[lang] || 'cn'
+}
 </script>
 
 <template>
@@ -314,20 +316,24 @@ const getLanguageCode = (lang: string): string => {
     <van-loading v-if="loading" type="spinner" />
     <div class="wrap">
       <div class="content-wrap">
-        <div class="item title" @click="focusTitle" :class="{ 'title-focus': focusIndex === 'title' }">
+        <div class="item title" :class="{ 'title-focus': focusIndex === 'title' }" @click="focusTitle">
           <div class="li">
-            <textarea class="form-title" placeholder="表单标题" v-model="formData.display_name" @focus="autoText"
-              @input="autoText"></textarea>
+            <textarea
+              v-model="formData.display_name" class="form-title" placeholder="表单标题" @focus="autoText"
+              @input="autoText"
+            ></textarea>
           </div>
-          <div class="add-list" @click="addListFn" v-if="!formData.question[0].length">
+          <div v-if="!formData.question[0].length" class="add-list" @click="addListFn">
             <van-icon name="plus" />
           </div>
         </div>
 
         <div class="q-wrap">
           <van-form @submit="onSubmit">
-            <draggable v-for="(question, index) in formData.question" :key="index" :list="formData.question"
-              :move="onMove" @start="drag = true" @end="onEnd">
+            <draggable
+              v-for="(question, index) in formData.question" :key="index" :list="formData.question"
+              :move="onMove" @start="drag = true" @end="onEnd"
+            >
               <div class="q-li" :class="{ 'q-li-focus': focusIndex === index }" @click="focusItem($event, index)">
                 <div class="drap-area">
                   <van-icon name="drag" />
@@ -335,37 +341,43 @@ const getLanguageCode = (lang: string): string => {
 
                 <div v-for="(content, index1) in question.content" :key="index1">
                   <van-cell-group inset>
-                    <van-field class="form-cell-group" v-model="content.title" label="问题：" label-width="auto"
-                      @focus="autoText" @input="autoText" center clearable placeholder="请输入问题">
+                    <van-field
+                      v-model="content.title" class="form-cell-group" label="问题：" label-width="auto"
+                      center clearable placeholder="请输入问题" @focus="autoText" @input="autoText"
+                    >
                       <template #button>
                         <van-dropdown-menu v-if="focusIndex === index">
                           <van-dropdown-item v-model="question.types" :options="selectOptions" />
                         </van-dropdown-menu>
                       </template>
                     </van-field>
-                    <div class="q-item" v-if="['下拉列表', '单选题', '多选题'].includes(question.types)">
+                    <div v-if="['下拉列表', '单选题', '多选题'].includes(question.types)" class="q-item">
                       <div v-for="(item, i) in content.answer" :key="i" class="q-radio">
                         <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ i + 1 }}.</div>
-                        <div v-else class="icon-radio"
-                          :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
+                        <div
+                          v-else class="icon-radio"
+                          :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }"
+                        >
                         </div>
-                        <input class="radio-input" v-model="item.description" />
-                        <van-icon name="cross" v-if="focusIndex === index" @click="deleteRadioFn(index, index1, i)" />
+                        <input v-model="item.description" class="radio-input" />
+                        <van-icon v-if="focusIndex === index" name="cross" @click="deleteRadioFn(index, index1, i)" />
                       </div>
 
-                      <div class="q-radio" v-if="focusIndex === index">
+                      <div v-if="focusIndex === index" class="q-radio">
                         <div v-if="['下拉列表', '优先级'].includes(question.types)" class="icon-radio">{{ content.answer.length
-      + 1
-                          }}.</div>
-                        <div v-else class="icon-radio"
-                          :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }">
+                          + 1
+                        }}.</div>
+                        <div
+                          v-else class="icon-radio"
+                          :class="{ 'icon-cirle': question.types === '单选题', 'icon-square': question.types === '多选题' }"
+                        >
                         </div>
-                        <input class="radio-add" v-model="addRadio" @focus="addRadioFn(index, index1)" />
+                        <input v-model="addRadio" class="radio-add" @focus="addRadioFn(index, index1)" />
                       </div>
                     </div>
-                    <div class="q-item text-wrap" v-if="question.types === '文本题'">文本回答</div>
-                    <div class="q-item option-wrap pt10" v-if="focusIndex === index">
-                      <van-icon name="delete" @click="deleteListFn(index)"/>
+                    <div v-if="question.types === '文本题'" class="q-item text-wrap">文本回答</div>
+                    <div v-if="focusIndex === index" class="q-item option-wrap pt10">
+                      <van-icon name="delete" @click="deleteListFn(index)" />
                     </div>
                   </van-cell-group>
                 </div>
@@ -382,10 +394,11 @@ const getLanguageCode = (lang: string): string => {
     </div>
   </div>
 </template>
+
 <style lang="less">
 .form-create-wrap {
   @green: #4ca2ae;
-  @grey: rgba(0, 0, 0, .5);
+  @grey: rgba(0, 0, 0, 0.5);
   position: relative;
   width: 80%;
   min-width: 400px;
@@ -409,7 +422,9 @@ const getLanguageCode = (lang: string): string => {
     .content-wrap {
       flex: 1;
       background-color: #fff;
-      box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .1);
+      box-shadow:
+        0 0 2px rgba(0, 0, 0, 0.12),
+        0 2px 4px rgba(0, 0, 0, 0.1);
       margin-right: 10px;
     }
 
@@ -419,7 +434,9 @@ const getLanguageCode = (lang: string): string => {
       align-self: flex-end;
       display: inline-block;
       background-color: #fff;
-      box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24);
+      box-shadow:
+        0 0 2px rgba(0, 0, 0, 0.12),
+        0 2px 4px rgba(0, 0, 0, 0.24);
 
       .sidebar-li {
         cursor: pointer;
@@ -477,7 +494,9 @@ const getLanguageCode = (lang: string): string => {
   .q-wrap {
     .q-li-focus {
       border-left-color: @green !important;
-      box-shadow: 0 -2px 2px 0 rgba(0, 0, 0, 0.2), 0 2px 6px 0 rgba(0, 0, 0, 0.24);
+      box-shadow:
+        0 -2px 2px 0 rgba(0, 0, 0, 0.2),
+        0 2px 6px 0 rgba(0, 0, 0, 0.24);
     }
 
     .q-li {
@@ -616,7 +635,7 @@ const getLanguageCode = (lang: string): string => {
       display: flex;
 
       .square-li {
-        flex: 1
+        flex: 1;
       }
     }
 
@@ -792,7 +811,6 @@ const getLanguageCode = (lang: string): string => {
   }
 }
 
-
 // 个人自定义
 .form-create-wrap {
   min-width: 0;
@@ -834,7 +852,7 @@ const getLanguageCode = (lang: string): string => {
   padding: 20px;
 }
 
-.form-create-wrap .q-wrap .text-wrap{
+.form-create-wrap .q-wrap .text-wrap {
   width: 100%;
 }
 </style>

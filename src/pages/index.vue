@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import useAppStore from '@/stores/modules/app';
-import { languageColumns, locale } from '@/utils/i18n';
-import type { PickerColumn } from 'vant';
+import type { PickerColumn } from 'vant'
+import useAppStore from '@/stores/modules/app'
+import { languageColumns, locale } from '@/utils/i18n'
 
 definePage({
   name: 'home',
   meta: {
     level: 1,
   },
+  redirect: '/login',
 })
 
 const appStore = useAppStore()

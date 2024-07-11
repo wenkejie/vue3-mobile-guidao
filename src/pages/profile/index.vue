@@ -13,6 +13,8 @@ definePage({
 const { t } = useI18n()
 const router = useRouter()
 
+const baseUrl = ref(`${import.meta.env.VITE_APP_PUBLIC_PATH}`)
+
 const userInfo = ref(JSON.parse(localStorage.getItem('userInfo')))
 
 function loginOut() {
@@ -27,9 +29,9 @@ function loginOut() {
       <van-image
         width="100"
         height="100"
-        src="../../../public/img/cat.jpeg"
+        :src="`${baseUrl}/img/cat.jpeg`"
       />
-      <p><span class="inline-block v-middle mr-10">{{ userInfo.fullName }}</span><van-button class="inline-block v-middle" type="danger" @click="loginOut" size="mini">登出</van-button></p>
+      <p><span class="mr-10 inline-block v-middle">{{ userInfo.fullName }}</span><van-button class="inline-block v-middle" type="danger" size="mini" @click="loginOut">登出</van-button></p>
       <div class="p10">
         <van-grid square>
           <!-- <van-grid-item icon="photo-o" text="我的下发" to="/profile/circulateList" /> -->
