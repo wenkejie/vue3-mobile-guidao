@@ -150,7 +150,7 @@ function updateReadingTime() {
   const currentTime = Date.now()
   readingTime.value += Math.floor((currentTime - startTime.value) / 1000)
   startTime.value = currentTime
-  // console.log(readingTime.value, 'readingTime')
+  console.log(readingTime.value, 'readingTime')
 }
 
 function handleVisibilityChange() {
@@ -179,6 +179,7 @@ function handleActiveInfo(num) {
     updateCirculationDocStudy(studyInfo.value).then((res) => {
       if (res.statusCode === 200) {
         activeInfo.value = num
+        router.back(-1)
       }
       else {
         showNotify({ type: 'danger', message: res.msg })
@@ -191,13 +192,24 @@ function handleActiveInfo(num) {
   }
 }
 
+function gotoConfirm() {
+  stopTracking()
+  // console.log(readingTime.value > timeLimit.value, readingTime.value,timeLimit.value,'readingTime.value > timeLimit.value')
+  if (readingTime.value > (timeLimit.value)) {
+    handleActiveInfo(2)
+  } else {
+    showNotify({ type: 'warning', message: `学习时间不足${timeLimit.value}秒` })
+    startTracking()
+  }
+}
+
 function gotoAnsQues() {
   stopTracking()
-  if (readingTime.value > 5) {
+  if (readingTime.value > timeLimit.value) {
     handleActiveInfo(2)
     showQuestions.value = true
   } else {
-    showNotify({ type: 'warning', message: `学习时间不足${timeLimit.value / 1000}秒` })
+    showNotify({ type: 'warning', message: `学习时间不足${timeLimit.value}秒` })
     startTracking()
   }
 }
@@ -217,7 +229,7 @@ onMounted(() => {
     // quesTitleArr.value = res.data.circulationQuestions.map(ele => ele.title);
     // questions.value = res.data.circulationQuestions.map(ele => ele);
     hasQuestion.value = res.data.isHasQuestion
-    timeLimit.value = res.data.browseDuration * 1000
+    timeLimit.value = Number(res.data.browseDuration)
     res.data.circulationQuestions.forEach((field) => {
       questions.value.push(
         {
@@ -261,8 +273,11 @@ const customFieldName = {
       <iframe ref="iframe" :src="viewUrl" width="100%" height="500px" frameborder="0" allowfullscreen></iframe>
     </div>
     <div v-if="isFinished == 'false'" class="mt-20 text-right">
-      <van-button v-if="hasQuestion && activeInfo === 1" type="primary" size="small" block @click="gotoAnsQues">答题</van-button>
-      <van-button v-else type="primary" size="small" block @click="handleActiveInfo(2)">确认</van-button>
+      <div v-if="hasQuestion">
+        <van-button v-if="activeInfo === 1" type="primary" size="small" block @click="gotoAnsQues">答题</van-button>
+        <van-button v-if="activeInfo === 2" type="primary" size="small" block @click="handleActiveInfo(2)">确认</van-button>
+      </div>
+      <van-button v-else type="primary" size="small" block @click="gotoConfirm(2)">确认2</van-button>
     </div>
     <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '80%' }">
       <h3 class="text-center">下发设置</h3>

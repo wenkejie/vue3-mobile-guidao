@@ -1,0 +1,1 @@
+import{d as t,k as n,a8 as l,ad as o,o as d}from"./index-TK-srSu3.js";const p=t({__name:"Container",props:{paddingX:{type:Number,default:16}},setup(e){return(a,r)=>(d(),n("main",{class:"absolute left-0 h-full w-full overflow-y-auto pt-46",style:o("padding-left: ".concat(e.paddingX,"px; padding-right: ").concat(e.paddingX,"px"))},[l(a.$slots,"default")],4))}});export{p as _};
