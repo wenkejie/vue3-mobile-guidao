@@ -244,7 +244,7 @@ departMentInit()
               <van-switch v-model="formInfo.isExpireUnableLook" />
             </template>
           </van-field>
-          <van-field name="switch2" label="是否答题" label-width="150px">
+          <van-field name="switch2" label="是否设置答题" label-width="150px">
             <template #input>
               <van-switch v-model="formInfo.ishasQues" />
             </template>
