@@ -1,0 +1,1 @@
+System.register(["./index-legacy-9OZgdCRp.js"],(function(e,n){"use strict";var t,r;return{setters:[e=>{t=e.ak,r=e.as}],execute:function(){e("u",(function(e){const n=r();n&&t(n.proxy,e)})),e("a",(()=>{var e;const{scopeId:n}=(null==(e=r())?void 0:e.vnode)||{};return n?{[n]:""}:null}))}}}));

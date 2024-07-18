@@ -72,3 +72,12 @@ export async function handelLogin(data) {
     },
   })
 }
+
+// 文件列表接口
+export async function listDocument(query) {
+  return request({
+    url: '/api/Document/search',
+    method: 'get',
+    params: query,
+  })
+}

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 definePage({
-  name: 'createForm',
+  name: 'quesForm',
   meta: {
     level: 2,
-    title: 'form',
+    title: 'quesForm',
     i18n: '新增答题',
   },
 })
@@ -76,6 +76,7 @@ const formData = ref<FormData>({
     question_id: 1,
     types: '单选题',
     is_required: false,
+    correctAnswer: '',
     content: [
       {
         language: 'cn',
@@ -95,6 +96,43 @@ const formData = ref<FormData>({
     ],
   }],
 })
+
+const formData2 = ref<FormData>({
+  display_name: '',
+  name: [{
+    questionnaire_name: '',
+    desc: '',
+    language: 'cn',
+  }],
+  repeat_submit: false,
+  question: [{
+    question_id: 1,
+    types: '单选题',
+    is_required: false,
+    content: [
+      {
+        language: 'cn',
+        title: '',
+        answer: [{
+          answer_id: 1,
+          description: '选项1',
+          value: '',
+        }],
+      },
+    ],
+  }],
+})
+
+const qsForm = ref([{
+  title: '',
+  answers: [
+    {
+      value: '',
+      description: ''
+    }
+  ]
+}])
+
 const editable = ref(true)
 const focusIndex = ref<number | string>(0)
 
@@ -195,7 +233,7 @@ function saveFn() {
 }
 
 function onSubmit(values) {
-  console.log('submit', JSON.stringify(formData.value))
+  console.log('submit', formData.value.question)
 }
 
 function addLangFn() {
@@ -317,12 +355,6 @@ function getLanguageCode(lang: string): string {
     <div class="wrap">
       <div class="content-wrap">
         <div class="item title" :class="{ 'title-focus': focusIndex === 'title' }" @click="focusTitle">
-          <div class="li">
-            <textarea
-              v-model="formData.display_name" class="form-title" placeholder="表单标题" @focus="autoText"
-              @input="autoText"
-            ></textarea>
-          </div>
           <div v-if="!formData.question[0].length" class="add-list" @click="addListFn">
             <van-icon name="plus" />
           </div>
@@ -345,11 +377,6 @@ function getLanguageCode(lang: string): string {
                       v-model="content.title" class="form-cell-group" label="问题：" label-width="auto"
                       center clearable placeholder="请输入问题" @focus="autoText" @input="autoText"
                     >
-                      <template #button>
-                        <van-dropdown-menu v-if="focusIndex === index">
-                          <van-dropdown-item v-model="question.types" :options="selectOptions" />
-                        </van-dropdown-menu>
-                      </template>
                     </van-field>
                     <div v-if="['下拉列表', '单选题', '多选题'].includes(question.types)" class="q-item">
                       <div v-for="(item, i) in content.answer" :key="i" class="q-radio">
@@ -383,11 +410,11 @@ function getLanguageCode(lang: string): string {
                 </div>
               </div>
             </draggable>
-            <!-- <div class="form-bottom">
+            <div class="form-bottom">
               <van-button round block type="primary" class="submit-btn" native-type="submit">
                 提交
               </van-button>
-            </div> -->
+            </div>
           </van-form>
         </div>
       </div>

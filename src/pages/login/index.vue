@@ -13,12 +13,13 @@ definePage({
 })
 
 const loginForm = ref({
-  userName: '944623251@qq.com',
-  password: '123456',
+  userName: '', // 944623251@qq.com
+  password: '', // 123456
 })
 
 function onSubmit() {
   console.log('submit', loginForm.value)
+  localStorage.clear()
   handelLogin(loginForm.value)
     .then((res) => {
       if (res) {
@@ -29,10 +30,15 @@ function onSubmit() {
           isAdmin: res.id,
           phoneNumber: res.phoneNumber,
           userName: res.userName,
+          claimTypes: res.claimTypes,
         }
         localStorage.setItem('ZR-Token', res.bearerToken)
         localStorage.setItem('userInfo', JSON.stringify(userInfo))
-        router.replace('/transform')
+        if (userInfo.claimTypes.includes('*:*')){
+          router.replace('/file')
+        }else{
+          router.replace('/transform')
+        }
       }
       else {
         console.log('login error ', res)
