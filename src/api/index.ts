@@ -81,3 +81,13 @@ export async function listDocument(query) {
     params: query,
   })
 }
+
+
+// 下发接口
+export async function sendCirculationDocMobile(data) {
+  return request({
+    url: '/api/Circulation/SendCirculationDocMobile',
+    method: 'post',
+    data,
+  })
+}

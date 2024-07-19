@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GetUsers, getDepartments, getDocumentToken } from '@/api'
+import { GetUsers, getDepartments, getDocumentToken, sendCirculationDocMobile } from '@/api'
 
 import { fromByteArray } from 'base64-js'
 
@@ -23,6 +23,7 @@ interface Item {
 const mainActiveIndex = ref(0)
 const activeIds = ref<number[]>([])
 const selectActiveIds = ref([])
+const selectPersons = ref([])
 // const activeIds = ref([])
 const treeItems = ref<Item[]>([])
 
@@ -34,7 +35,11 @@ const setting = ref({
   src: 'https://m.baidu.com/',
 })
 
-const formInfo = ref({})
+const formInfo = ref({
+  documentId: route.query.id,
+  startDate: '',
+  endDate: '',
+})
 
 const datePicker = ref(false)
 const personPicker = ref(false)
@@ -56,25 +61,43 @@ function showPopup() {
   showOptions.value = true
 }
 
-const show = ref(true);
-
-function gotoCreateForm() {
-
-}
+const show = ref(false)
 
 function seadFile() {
   console.log('onload')
 }
 
 function onSubmit(values) {
-  console.log('submit', formInfo)
+  const submitInfo = {
+    documentId: formInfo.value.documentId,
+    startDate: formInfo.value.startDate,
+    endDate: formInfo.value.endDate,
+    isExpirePush: formInfo.value.isExpirePush,
+    isExpireUnableLook: formInfo.value.isExpireUnableLook,
+    browseDuration: formInfo.value.browseDuration,
+    isHasQuestion: formInfo.value.isHasQuestion,
+    users: selectPersons.value.flat().map(item => item.id),
+    questions: formInfo.value.questions,
+  }
+  // submitInfo.startDate = formInfo.value.startDate
+  // submitInfo.users = formInfo.value.users.split(',')
+  // console.log(formInfo.value.users.split(','), 'formInfo.value.users')
+  sendCirculationDocMobile(submitInfo).then((res) => {
+    if(res.statusCode == 200){
+      window.history.go(-1)
+    }
+    // console.log(res, 'res')
+  })
+  // console.log('submit', submitInfo)
 }
 
 const formatDate = date => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 function onDateConfirm(values) {
   const [start, end] = values
   datePicker.value = false
-  formInfo.value.dateTime = `${formatDate(start)} ~ ${formatDate(end)}`
+  // formInfo.value.dateTime = `${formatDate(start)} ~ ${formatDate(end)}`
+  formInfo.value.startDate = `${formatDate(start)}`
+  formInfo.value.endDate = `${formatDate(end)}`
 }
 
 function departMentInit() {
@@ -116,7 +139,7 @@ async function loadChildren(id: number) {
         let _arr = res.data.list
         const userArr = []
         _arr.forEach((element) => {
-          userArr.push({ text: element.firstName, id: Number(element.userName) })
+          userArr.push({ text: element.firstName, id: element.id })
         })
         console.log(userArr, 'userArr')
         resolve(userArr)
@@ -142,17 +165,19 @@ async function onClickNav(index: number) {
   }
 }
 
-function onClickItem(item: { id: number }) {
-  const ids = [...selectActiveIds.value]; // 深拷贝 activeIds.value
-  const index = ids.indexOf(Number(item.id));
+let _arr = []
+function onClickItem(item: { id: string }) {
+  // console.log(selectPersons.value, 'formInfo.value.persons')
+  console.log(item, 'item')
+  _arr = [...selectPersons.value]
+  const index = _arr.indexOf(item.text)
   if (index === -1) {
-    ids.push(item.id);
+    _arr.push(item);
   } else {
-    ids.splice(index, 1);
+    _arr.splice(index, 1);
   }
-
-  activeIds.value = ids; // 更新 activeIds.value
-  formInfo.value.persons = ids;
+  selectPersons.value = [..._arr]
+  console.log(_arr, 'formInfo.value.persons')
 }
 
 function handleView() {
@@ -205,6 +230,14 @@ const delAnsItem = (qIndex, aIndex) => {
   qsForm.value[qIndex].answers.splice(aIndex, 1);
 };
 
+const handelClosed = () => {
+  let _arr = []
+  selectPersons.value.forEach(element => {
+    _arr.push(element.text)
+  })
+  formInfo.value.users = _arr.join(',')
+}
+
 handleView()
 departMentInit()
 </script>
@@ -220,10 +253,10 @@ departMentInit()
     <!-- 左侧弹出 -->
     <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '90%' }">
       <h3 class="text-center">下发设置</h3>
-      <van-form @submit="onSubmit">
+      <van-form>
         <van-cell-group inset>
-          <van-field v-model="formInfo.dateTime" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间" @click="datePicker = true" />
-          <van-field v-model="formInfo.persons" is-link readonly name="persons" label="人员选择" placeholder="点击下发人员" @click="personPicker = true;" />
+          <van-field :model-value="`${formInfo.startDate}~${formInfo.endDate}`" is-link readonly name="datePicker" label="时间选择" placeholder="点击选择时间" @click="datePicker = true" />
+          <van-field v-model="formInfo.users" is-link readonly label="人员选择" placeholder="点击下发人员" @click="personPicker = true;" />
           <van-field
             v-model="formInfo.browseDuration"
             name="传阅时长"
@@ -246,20 +279,23 @@ departMentInit()
           </van-field>
           <van-field name="switch2" label="是否设置答题" label-width="150px">
             <template #input>
-              <van-switch v-model="formInfo.ishasQues" />
+              <van-switch v-model="formInfo.isHasQuestion" />
+              <van-button style="width: 75px;margin-left: 10px;" v-if="formInfo.isHasQuestion" size="small" round block type="primary" @click="show = true">
+                题目设置
+              </van-button>
             </template>
           </van-field>
           <!-- <van-field v-model="formInfo.person" is-link readonly name="area" label="人员选择" placeholder="点击下发人员"
             @click="personPicker = true; personInit()" /> -->
         </van-cell-group>
         <div class="m-15">
-          <van-button round block type="primary" native-type="submit">
+          <van-button round block type="primary" @click="onSubmit">
             提交
           </van-button>
         </div>
       </van-form>
     </van-popup>
-    <van-dialog v-model:show="show" title="标题" show-cancel-button>
+    <van-dialog v-model:show="show" title="标题" show-cancel-button @confirm="console.log(qsForm, 'qsform');formInfo.questions = qsForm">
       <div class="qs-grid">
         <p class="qs-title">
           <span class="span">题目新增：</span>
@@ -310,7 +346,7 @@ departMentInit()
       </div>
     </van-dialog>
     <van-calendar v-model:show="datePicker" type="range" @confirm="onDateConfirm" />
-    <van-popup v-model:show="personPicker" position="bottom">
+    <van-popup v-model:show="personPicker" @close="handelClosed" position="bottom">
       <van-tree-select
         v-model:active-id="selectActiveIds" v-model:main-active-index="mainActiveIndex" :items="treeItems"
         @click-nav="onClickNav" @click-item="onClickItem" />

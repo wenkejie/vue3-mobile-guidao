@@ -1,1 +1,0 @@
-import{ak as o,as as s}from"./index-CIq-oMdo.js";function a(e){const n=s();n&&o(n.proxy,e)}const r=()=>{var e;const{scopeId:n}=((e=s())==null?void 0:e.vnode)||{};return n?{[n]:""}:null};export{r as a,a as u};

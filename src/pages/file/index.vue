@@ -35,7 +35,7 @@ const state = reactive({
     Skip: 0,
     isAdmin: false,
     isFinished: false,
-    IsCirculation: true,
+    IsCirculation: false,
     PageSize: 20,
     SearchQuery: '',
   },

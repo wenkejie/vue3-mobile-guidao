@@ -1,1 +1,0 @@
-System.register(["./index-legacy-9OZgdCRp.js"],(function(e,n){"use strict";var t;return{setters:[e=>{t=e.as}],execute:function(){e("u",(function(){const e=t(),{name:u="unknown"}=(null==e?void 0:e.type)||{};return`${u}-${++n}`}));let n=0}}}));
