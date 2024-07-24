@@ -91,3 +91,19 @@ export async function sendCirculationDocMobile(data) {
     data,
   })
 }
+
+// 文件传阅列表接口
+export async function getCirculationList(query) {
+  return request({
+    url: '/api/Circulation/GetCirculationDocs',
+    method: 'get',
+    params: query,
+  })
+}
+
+export async function getCirculationDetail(id) {
+  return request({
+    url: `/api/Circulation/GetCirculationDocAdmin?id=${id}`,
+    method: 'get',
+  })
+}

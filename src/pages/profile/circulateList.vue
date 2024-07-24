@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { getCirculationList } from '@/api'
 definePage({
   name: 'list',
   meta: {
-    level: 2,
+    level: 1,
     title: 'list',
     i18n: '下发列表',
   },
@@ -23,20 +24,42 @@ const options = [
   { text: '活动商品', value: 2 },
 ]
 
+const state = reactive({
+  form: {
+    storeType: 1,
+  },
+  queryParams: {
+    Skip: 0,
+    isAdmin: true,
+    isFinished: true,
+    PageSize: 20,
+    SearchQuery: '',
+  },
+})
+const { queryParams, form } = toRefs(state)
+
 function onLoad() {
   // 异步更新数据
   // setTimeout 仅做示例，真实场景中一般为 ajax 请求
-  setTimeout(() => {
-    for (let i = 0; i < 10; i++)
-      list.value.push(list.value.length + 1)
-
-    // 加载状态结束
-    loading.value = false
-
-    // 数据全部加载完成
-    if (list.value.length >= 15)
+  loading.value = true
+  getCirculationList(queryParams.value).then((res) => {
+    if (res.statusCode === 200) {
+      list.value = res.data.list
+      loading.value = false
       finished.value = true
-  }, 1000)
+    }
+  })
+}
+
+const baseUrl = ref(`${import.meta.env.VITE_APP_PUBLIC_PATH}`)
+
+function getFileIcon(type) {
+  if (type === '.png' || type === '.jpg')
+    return `${baseUrl.value}/img/CarbonImage.png`
+  else if (type === '.word')
+    return `${baseUrl.value}/img/CarbonDocumentWordProcessor.png`
+  else
+    return `${baseUrl.value}/img/CarbonDocumentPdf.png`
 }
 
 function onConfirm() {
@@ -48,44 +71,29 @@ function onConfirm() {
 
 <template>
   <Container class="my-15 pb-52">
-    <van-search v-model="value" placeholder="请输入搜索关键词" />
-    <van-dropdown-menu ref="menuRef" class="mb-10">
-      <van-dropdown-item v-model="menuValue" :options="options" />
-      <van-dropdown-item ref="itemRef" title="筛选">
-        <van-cell center title="包邮">
-          <template #right-icon>
-            <van-switch v-model="switch1" />
-          </template>
-        </van-cell>
-        <van-cell center title="团购">
-          <template #right-icon>
-            <van-switch v-model="switch2" />
-          </template>
-        </van-cell>
-        <div style="padding: 5px 16px;">
-          <van-button type="primary" round block @click="onConfirm">
-            确认
-          </van-button>
-        </div>
-      </van-dropdown-item>
-    </van-dropdown-menu>
+    <div class="search-grid">
+      <van-search
+        v-model="queryParams.SearchQuery"
+        show-action
+        label="文件名"
+        @cancel="handelCancel"
+        @search="handelSearch"
+        placeholder="请输入搜索关键词"
+      ></van-search>
+    </div>
     <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
       <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
-      <van-cell v-for="item in list" :key="item" value="内容" :title="item" center>
+      <van-cell v-for="item in list" :key="item" value="内容" :title="item" center :to="`/profile/circulateDetail?id=${item.id}`">
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
-          <div>
+          <div class="w-240">
             <van-image
-              width="2.6rem"
-              height="2.6rem"
-              fit="contain"
-              position="left"
-              src="../../../public/img/CarbonDocumentWordProcessor.png"
-              class="mr-5 inline-block v-middle"
+              width="2.6rem" height="2.6rem" fit="contain" position="left"
+              :src="getFileIcon(item.documentExtension)" class="mr-5 inline-block v-middle"
             />
             <div class="inline-block v-middle">
-              <span class="block line-height-none">item</span>
-              <span class="mt-5 block c-gray line-height-none">2019-09-01</span>
+              <span class="block overflow-hidden whitespace-nowrap line-height-none" style="text-overflow: ellipsis;width: 200px;">{{ item.documentName }}</span>
+              <span class="mt-5 block c-gray line-height-none font-size-12">截止日:{{ $formatDate(item.createdDate, 'yyyy-MM-dd HH:mm') }}</span>
             </div>
           </div>
         </template>
@@ -100,4 +108,16 @@ function onConfirm() {
 </template>
 
 <style lang="less" scoped>
+.search-grid {
+  box-shadow: var(--van-dropdown-menu-shadow);
+  margin-bottom: 15px;
+
+  & /deep/ .van-dropdown-menu__bar {
+    box-shadow: none;
+  }
+
+  .van-search {
+    border-bottom: 1px solid #f5f5ff;
+  }
+}
 </style>

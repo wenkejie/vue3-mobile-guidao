@@ -22,9 +22,8 @@ const menuValue = ref(0)
 const switch1 = ref(false)
 const switch2 = ref(false)
 const options = [
-  { text: '全部商品', value: 0 },
-  { text: '新款商品', value: 1 },
-  { text: '活动商品', value: 2 },
+  { text: '未下发', value: false },
+  { text: '已下发', value: true },
 ]
 
 const state = reactive({
@@ -36,6 +35,7 @@ const state = reactive({
     isAdmin: false,
     isFinished: false,
     IsCirculation: false,
+    Status: 0,
     PageSize: 20,
     SearchQuery: '',
   },
@@ -51,6 +51,7 @@ function dateSelected({ selectedValues }) {
 function handelClosed() {
   menuRef.value?.close()
 }
+
 
 function onLoad() {
   // 异步更新数据
@@ -91,46 +92,31 @@ function onDateConfirm(values) {
   show.value = false
   date.value = `${formatDate(start)} ~ ${formatDate(end)}`
 }
+
+function handelSearch() {
+  onLoad()
+}
 </script>
 
 <template>
   <Container class="my-15 pb-52">
     <div class="search-grid">
-      <van-search v-model="value" placeholder="请输入搜索关键词" />
-      <van-row>
-        <van-col span="12">
-          <a href="javascript:" class="date-btn" @click="show = true">时间选择</a>
-        </van-col>
-        <van-col span="12">
-          <van-dropdown-menu ref="menuRef" style="box-shadow: none;">
-            <!-- <van-dropdown-item ref="itemRef" title="时间">
-            <van-date-picker @confirm="dateSelected" @cancel="handelClosed" />
-          </van-dropdown-item> -->
-            <van-dropdown-item ref="itemRef" title="筛选">
-              <van-cell center title="包邮">
-                <template #right-icon>
-                  <van-switch v-model="switch1" />
-                </template>
-              </van-cell>
-              <van-cell center title="团购">
-                <template #right-icon>
-                  <van-switch v-model="switch2" />
-                </template>
-              </van-cell>
-              <div style="padding: 5px 16px;">
-                <van-button type="primary" round block @click="onConfirm">
-                  确认
-                </van-button>
-              </div>
-            </van-dropdown-item>
-          </van-dropdown-menu>
-        </van-col>
-      </van-row>
+      <van-search
+        v-model="queryParams.SearchQuery"
+        show-action
+        label="文件名"
+        @cancel="handelCancel"
+        @search="handelSearch"
+        placeholder="请输入搜索关键词"
+      ></van-search>
+      <van-dropdown-menu ref="menuRef">
+        <van-dropdown-item v-model="queryParams.IsCirculation" :options="options" @change="handelSearch" />
+      </van-dropdown-menu>
     </div>
 
     <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
       <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
-      <van-cell v-for="item in list" :key="item" value="内容" is-link :title="item" center :to="`/file/detail?id=${item.id}&name=${item.name}`">
+      <van-cell v-for="item in list" :key="item" value="内容" is-link :title="item" center :to="`/file/detail?id=${item.id}&name=${item.name}&isCirculation=${item.isCirculation}`">
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
           <div class="w-240">

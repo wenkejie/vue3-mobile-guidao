@@ -245,8 +245,8 @@ departMentInit()
 <template>
   <Container>
     <div class="mt-20 text-right">
-      <van-button type="primary" class="important-mr-10" size="small" @click="showPopup">下发</van-button>
-      <van-button type="warning" size="small" to="/file/createFrom">答题</van-button>
+      <van-button type="primary" class="important-mr-10" size="small" v-if="route.query.isCirculation == 'false'" @click="showPopup">下发</van-button>
+      <!-- <van-button type="warning" size="small" to="/file/createFrom">答题</van-button> -->
     </div>
     <iframe ref="iframe" :src="viewUrl" class="mt-10" width="100%" height="500px" frameborder="0"
       allowfullscreen></iframe>

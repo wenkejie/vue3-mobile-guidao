@@ -21,6 +21,8 @@ function loginOut() {
   localStorage.clear()
   router.replace('/login')
 }
+
+console.log(userInfo.value.claimTypes, 'claimTypes')
 </script>
 
 <template>
@@ -32,9 +34,9 @@ function loginOut() {
         :src="`${baseUrl}/img/cat.jpeg`"
       />
       <p><span class="mr-10 inline-block v-middle">{{ userInfo.fullName }}</span><van-button class="inline-block v-middle" type="danger" size="mini" @click="loginOut">登出</van-button></p>
-      <div class="p10">
+      <div class="p10" v-if="userInfo.claimTypes[0] === '*:*'">
         <van-grid square>
-          <!-- <van-grid-item icon="photo-o" text="我的下发" to="/profile/circulateList" /> -->
+          <van-grid-item icon="photo-o" text="我的下发" to="/profile/circulateList" />
           <!-- <van-grid-item icon="photo-o" text="文字" />
           <van-grid-item icon="photo-o" text="文字" />
           <van-grid-item icon="photo-o" text="文字" /> -->
