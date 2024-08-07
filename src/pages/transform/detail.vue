@@ -56,11 +56,11 @@ const roundedReadingTime = computed(() => Math.round(readingTime.value))
 
 function onSubmit(values) {
   // console.log('submit', formData.value)
-  handleActiveInfo(2)
+  // handleActiveInfo(2)
   updateCirculationDocAnswer(formData.value).then((res) => {
     if (res.statusCode === 200) {
       showNotify({ type: 'success', message: '提交成功' })
-      handleActiveInfo(2)
+      // handleActiveInfo(2)
       // route.histroy('-1')
       router.go(-1)
     }
@@ -162,7 +162,7 @@ function handleVisibilityChange() {
 
 function onConfirm({ selectedOptions }) {
   curSelectLabel.value[curIndex.value] = selectedOptions.map(option => option.description).join('/')
-  formData.value.userAnswers[curIndex.value].answerId = selectedOptions[0]?.id
+  formData.value.userAnswers[curIndex.value].answer = selectedOptions[0]?.description
   showPicker.value = false
 }
 
@@ -214,6 +214,12 @@ function gotoAnsQues() {
     startTracking()
   }
 }
+
+function handelConfirm() {
+  handleActiveInfo(2)
+  router.back(-1)
+}
+
 onBeforeMount(() => {
   isFinished.value = route.query.isFinished
   // console.log(typeof (isFinished.value), 'isFinished')
@@ -241,6 +247,7 @@ onMounted(() => {
       formData.value.userAnswers.push({
         questionId: field.circulationQuestionAnswers[0].circulationQuestionId,
         answerId: '',
+        type: field.type,
       })
       quesTitleArr.value.push(field.title)
     })
@@ -276,11 +283,11 @@ const customFieldName = {
     <div v-if="isFinished == 'false'" class="mt-20 text-right">
       <div v-if="hasQuestion">
         <van-button v-if="activeInfo === 1" type="primary" size="small" block @click="gotoAnsQues">答题</van-button>
-        <van-button v-if="activeInfo === 2" type="primary" size="small" block @click="handleActiveInfo(2)">确认</van-button>
+        <van-button v-if="activeInfo === 2" type="primary" size="small" block @click="handelConfirm">确认</van-button>
       </div>
       <van-button v-else type="primary" size="small" block @click="gotoConfirm(2)">确认</van-button>
     </div>
-    <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '80%' }">
+    <!-- <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '80%' }">
       <h3 class="text-center">下发设置</h3>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
@@ -291,12 +298,21 @@ const customFieldName = {
           <van-button round block type="primary" native-type="submit">提交</van-button>
         </div>
       </van-form>
-    </van-popup>
-    <van-popup v-model:show="showQuestions" position="bottom" title="答题" :style="{ width: '100%', height: '80%' }">
+    </van-popup> -->
+    <van-popup v-model:show="showQuestions" position="bottom" title="答题" :style="{ width: '100%', height: '80%' }" @click-overlay="activeInfo = 1">
       <h3 class="text-center">请根据文件内容答题</h3>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
-          <van-field v-for="(answer, index) in formData.userAnswers" placeholder="请选择答案" :key="answer.questionId" v-model="curSelectLabel[index]" disabled :label="`${quesTitleArr[index]}:`" label-width="160px" label-align="right" @click="handleSelect(answer.questionId, index)" />
+          <div v-for="(item, index) in formData.userAnswers">
+            <van-field v-if="item.type === 0" placeholder="请选择答案" :key="item.questionId" v-model="curSelectLabel[index]" disabled label-width="160px" label-align="right" @click="handleSelect(item.questionId, index)" >
+              <template #label>
+                <span style="color: #333;">
+                  {{ quesTitleArr[index] }}:
+                </span>
+              </template>
+            </van-field>
+            <van-field v-else placeholder="请输入答案" :key="item.questionId" v-model="item.answer" :label="`${quesTitleArr[index]}:`" label-width="160px" label-align="right"></van-field>
+          </div>
         </van-cell-group>
         <div class="m-15">
           <van-button round block type="primary" native-type="submit">提交</van-button>

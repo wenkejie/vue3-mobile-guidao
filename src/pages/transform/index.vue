@@ -111,6 +111,10 @@ function getFileIcon(type) {
 }
 
 getFileList()
+
+onUpdated(() => {
+  getFileList()
+})
 </script>
 
 <template>

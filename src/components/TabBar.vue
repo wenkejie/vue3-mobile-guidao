@@ -11,20 +11,20 @@ const display = computed(() => {
 
 const claimTypes = ref('')
 onUpdated(() => {
-  claimTypes.value = JSON.parse(localStorage.getItem('userInfo')).claimTypes
-  console.log(claimTypes.value.includes('*:*'))
-  console.log(display, 'display')
+  // claimTypes.value = JSON.parse(localStorage.getItem('userInfo')).claimTypes
+  // console.log(claimTypes.value.includes('*:*'))
+  // console.log(display, 'display')
 })
 </script>
 
 <template>
   <van-tabbar v-show="display" v-model="active" route>
-    <van-tabbar-item replace to="/file">
+    <!-- <van-tabbar-item replace to="/file">
       {{ t('layouts.file') }}
       <template #icon>
         <div class="i-carbon:document" />
       </template>
-    </van-tabbar-item>
+    </van-tabbar-item> -->
     <van-tabbar-item replace to="/transform">
       {{ t('layouts.circulate') }}
       <template #icon>

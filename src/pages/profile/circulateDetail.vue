@@ -28,12 +28,6 @@ const headers: Header[] = [
   { text: '答题情况', value: 'answerStatus', width: 80 },
 ]
 
-// const items: Item[] = [
-//   { player: '张三', team: 'GSW', number: 30, position: 'G', indicator: { height: '6-2', weight: 185 }, lastAttended: 'Davidson', country: 'USA' },
-//   { player: '李四', team: 'LAL', number: 6, position: 'F', indicator: { height: '6-9', weight: 250 }, lastAttended: 'St. Vincent-St. Mary HS (OH)', country: 'USA' },
-//   { player: '王五', team: 'BKN', number: 7, position: 'F', indicator: { height: '6-10', weight: 240 }, lastAttended: 'Texas-Austin', country: 'USA' },
-//   { player: '赵六', team: 'MIL', number: 34, position: 'F', indicator: { height: '6-11', weight: 242 }, lastAttended: 'Filathlitikos', country: 'Greece' },
-// ]
 const items = ref([])
 
 function onLoad() {

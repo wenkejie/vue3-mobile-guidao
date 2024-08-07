@@ -6,7 +6,6 @@ const router = useRouter()
 definePage({
   name: 'home2',
   meta: {
-    level: 1,
     title: '登录',
     i18n: '登录',
   },
