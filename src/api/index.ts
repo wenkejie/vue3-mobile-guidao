@@ -107,3 +107,19 @@ export async function getCirculationDetail(id) {
     method: 'get',
   })
 }
+
+export async function getStarredDocuments(query) {
+  return request({
+    url: '/api/DocumentStarred/GetStarredDocuments',
+    method: 'get',
+    params: query,
+  })
+}
+
+export async function toggleDocumentStarred(data) {
+  return request({
+    url: '/api/DocumentStarred/ToggleDocumentStarred',
+    method: 'post',
+    data,
+  })
+}

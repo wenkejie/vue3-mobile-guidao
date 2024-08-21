@@ -33,6 +33,8 @@ declare module 'vue-router/auto-routes' {
     'profile': RouteRecordInfo<'profile', '/profile', Record<never, never>, Record<never, never>>,
     'circulateDetail': RouteRecordInfo<'circulateDetail', '/profile/circulateDetail', Record<never, never>, Record<never, never>>,
     'list': RouteRecordInfo<'list', '/profile/circulateList', Record<never, never>, Record<never, never>>,
+    'starredDetail': RouteRecordInfo<'starredDetail', '/profile/starredDetail', Record<never, never>, Record<never, never>>,
+    'starredList': RouteRecordInfo<'starredList', '/profile/starredList', Record<never, never>, Record<never, never>>,
     'transform': RouteRecordInfo<'transform', '/transform', Record<never, never>, Record<never, never>>,
     'createForm': RouteRecordInfo<'createForm', '/transform/createFrom', Record<never, never>, Record<never, never>>,
     'detail': RouteRecordInfo<'detail', '/transform/detail', Record<never, never>, Record<never, never>>,

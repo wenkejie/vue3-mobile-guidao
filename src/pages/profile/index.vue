@@ -34,12 +34,13 @@ console.log(userInfo.value.claimTypes, 'claimTypes')
         :src="`${baseUrl}/img/cat.jpeg`"
       />
       <p><span class="mr-10 inline-block v-middle">{{ userInfo.fullName }}</span><van-button class="inline-block v-middle" type="danger" size="mini" @click="loginOut">登出</van-button></p>
-      <!-- <div class="p10" v-if="userInfo.claimTypes[0] === '*:*'">
+      <div class="p10">
         <van-grid square :gutter="10">
-          <van-grid-item icon="description-o" text="我的文件" to="/file" />
-          <van-grid-item icon="bar-chart-o" text="我的下发" to="/profile/circulateList" />
+          <van-grid-item icon="description-o" text="我的文件" to="/file" v-if="userInfo.claimTypes[0] === '*:*'"/>
+          <van-grid-item icon="bar-chart-o" text="我的下发" to="/profile/circulateList" v-if="userInfo.claimTypes[0] === '*:*'"/>
+          <van-grid-item icon="star-o" text="我的收藏" to="/profile/starredList"/>
         </van-grid>
-      </div> -->
+      </div>
     </div>
   </Container>
 </template>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { listTransformFile } from '@/api'
-
+import { listTransformFile, toggleDocumentStarred } from '@/api'
+import { showNotify } from 'vant'
 definePage({
   name: 'transform',
   meta: {
@@ -64,7 +64,14 @@ function getFileList() {
       dataList.value = res.data.list
       loading.value = false
       finished.value = true
+      if(res.data.totalCount > 0 && queryParams.value.isFinished === false) showNotify({ type: 'danger', message: `当前未阅数：${res.data.totalCount}` })
     }
+  })
+}
+
+function handelStarred(id) {
+  toggleDocumentStarred({documentId: id}).then((res) => {
+    console.log(res)
   })
 }
 
@@ -110,6 +117,7 @@ function getFileIcon(type) {
     return `${baseUrl.value}/img/CarbonDocumentPdf.png`
 }
 
+
 getFileList()
 
 onUpdated(() => {
@@ -137,6 +145,9 @@ onUpdated(() => {
       <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
       <van-cell v-for="item in dataList" :key="item" value="内容" is-link :title="item.documentName" center :to="`/transform/detail?documentId=${item.documentId}&id=${item.id}&name=${item.documentName}&isFinished=${Boolean(item.isFinished)}`">
         <!-- 使用 title 插槽来自定义标题 -->
+        <template #icon>
+          <van-icon name="star-o" style="display: block;padding-right: 5px;" @click.stop="handelStarred(item.documentId)"/>
+        </template>
         <template #title>
           <div class="w-240">
             <van-image
