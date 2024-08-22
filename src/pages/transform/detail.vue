@@ -3,8 +3,10 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { showNotify } from 'vant'
 import { fromByteArray } from 'base64-js'
-import { GetUsers, getDepartments, getDocumentToken, getTransFormDetail, updateCirculationDocAnswer, updateCirculationDocStudy } from '@/api'
+import { GetUsers, getDepartments, getDocumentToken, getTransFormDetail, updateCirculationDocAnswer, updateCirculationDocStudy, downFile, fileDownload } from '@/api'
 import router from '@/router/index'
+
+import { showConfirmDialog } from 'vant'
 
 definePage({
   name: 'detail',
@@ -29,6 +31,8 @@ const viewUrl = ref('')
 const showPicker = ref(false)
 
 const isFinished = ref(null)
+
+const { proxy } = getCurrentInstance()
 
 const formData = ref({
   circulationDocId: '',
@@ -220,6 +224,72 @@ function handelConfirm() {
   router.back(-1)
 }
 
+function copyText(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      copySuccess.value = true
+      ElMessage({
+        message: '文本已复制到剪贴板',
+        type: 'success',
+      })
+    }).catch(err => {
+      console.error('复制失败: ', err)
+      ElMessage({
+        message: '复制失败，请重试',
+        type: 'error',
+      })
+    })
+  } else {
+    console.log('浏览器不支持 Clipboard API')
+    fallbackCopyText(text)
+  }
+}
+
+function fallbackCopyText(text) {
+  const textarea = document.createElement('textarea')
+  textarea.value = text
+  textarea.style.position = 'fixed'  // 防止页面滚动
+  textarea.style.opacity = '0'  // 隐藏文本框
+  document.body.appendChild(textarea)
+  textarea.select()
+  try {
+    document.execCommand('copy')
+    copySuccess.value = true
+    ElMessage({
+      message: '文本已复制到剪贴板',
+      type: 'success',
+    })
+  } catch (err) {
+    console.error('传统方法复制失败: ', err)
+    ElMessage({
+      message: '复制失败，请手动复制',
+      type: 'error',
+    })
+  } finally {
+    document.body.removeChild(textarea)
+  }
+}
+
+async function handelDownLoad() {
+  // await fileDownload(route.query.documentId).then((res) => {
+  //   console.log(res, 'res')
+  // })
+  let downFileUrl = import.meta.env.VITE_APP_API_HOST + `api/Document/${route.query.documentId}/downloadAnon`
+  showConfirmDialog({
+    title: '复制当前下载地址去浏览器下载',
+    confirmButtonText: '复制',
+    message: downFileUrl
+  })
+    .then(() => {
+      console.log(downFileUrl,'downFileUrl')
+      copyText(downFileUrl)
+      // on confirm
+    })
+    .catch(() => {
+      // on cancel
+    });
+}
+
 onBeforeMount(() => {
   isFinished.value = route.query.isFinished
   // console.log(typeof (isFinished.value), 'isFinished')
@@ -286,6 +356,7 @@ const customFieldName = {
         <van-button v-if="activeInfo === 2" type="primary" size="small" block @click="handelConfirm">确认</van-button>
       </div>
       <van-button v-else type="primary" size="small" block @click="gotoConfirm(2)">确认</van-button>
+      <van-button type="default" style="margin-top: 5px;" size="small" block @click="handelDownLoad">下载</van-button>
     </div>
     <!-- <van-popup v-model:show="showOptions" position="bottom" title="下发设置" :style="{ width: '100%', height: '80%' }">
       <h3 class="text-center">下发设置</h3>

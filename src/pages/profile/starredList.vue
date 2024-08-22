@@ -72,7 +72,7 @@ function onConfirm() {
     </div>
     <van-list v-model:loading="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
       <!-- <van-cell v-for="item in list" :key="item" :title="item" /> -->
-      <van-cell v-for="item in list" :key="item" value="内容" is-link :title="item.documentName" center :to="`/profile/starredDetail?documentId=${item.documentId}&id=${item.id}&name=${item.name}&isFinished=${Boolean(false)}`">
+      <van-cell v-for="item in list" :key="item" value="内容" is-link :title="item.documentName" center :to="`/profile/starredDetail?documentId=${item.id}&name=${item.name}&isFinished=${Boolean(false)}`">
         <!-- 使用 title 插槽来自定义标题 -->
         <template #title>
           <div class="w-240">

@@ -123,3 +123,66 @@ export async function toggleDocumentStarred(data) {
     data,
   })
 }
+
+export async function fileDownload(id) {
+  return request({
+    url: `/api/Document/${id}/downloadAnon`,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    responseType: 'blob',
+    method: 'get',
+  })
+}
+
+/**
+ * 通用下载方法
+ * @param {*} url 请求地址
+ * @param {*} params 请求参数
+ * @param {*} config 配置
+ * @returns
+ */
+export async function downFile(url, params, config) {
+  // Show loading toast
+  const loadingToast = showLoadingToast({
+    message: '正在下载数据，请稍候',
+    forbidClick: true,
+    duration: 0, // Keep the toast open indefinitely
+  });
+
+  try {
+    const resp = await service.get(url, {
+      params,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      responseType: 'blob',
+      ...config,
+    });
+
+    const { data } = resp;
+
+    const isLogin = await blobValidate(data);
+    if (isLogin) {
+      const patt = new RegExp('filename=([^;]+\\.[^\\.;]+);*');
+      const contentDisposition = decodeURI(resp.headers['content-disposition']);
+      const result = patt.exec(contentDisposition);
+      let fileName = result[1].replace(/\"/g, '');
+
+      const blob = new Blob([data]);
+      saveAs(blob, fileName);
+    } else {
+      const resText = await data.text();
+      const rspObj = JSON.parse(resText);
+      const errMsg = errorCode[rspObj.code] || rspObj.msg || errorCode['default'];
+
+      showToast({
+        message: errMsg,
+        type: 'fail',
+      });
+    }
+  } catch (error) {
+    showToast({
+      message: '下载文件出现错误，请联系管理员！',
+      type: 'fail',
+    });
+  } finally {
+    loadingToast.clear(); // Close the loading toast
+  }
+}

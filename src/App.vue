@@ -5,6 +5,8 @@ import useRouteCache from '@/stores/modules/routeCache'
 import useRouteTransitionNameStore from '@/stores/modules/routeTransitionName'
 import useAutoThemeSwitcher from '@/hooks/useAutoThemeSwitcher'
 
+import { listTransformFile } from '@/api'
+
 useHead({
   title: 'Vue3 Vant Mobile',
   meta: [
@@ -37,8 +39,25 @@ const keepAliveRouteNames = computed(() => {
   return useRouteCache().routeCaches as string[]
 })
 
+// eslint-disable-next-line unused-imports/no-unused-vars
+function getUnfinishedNUmber() {
+  const queryParams = {
+    Skip: 0,
+    isAdmin: false,
+    isFinished: false,
+    PageSize: 20,
+    SearchQuery: '',
+  }
+  let ufNumber = localStorage.getItem('ufNumber')
+  listTransformFile(queryParams).then((res) => {
+    if(ufNumber != res.data.totalCount) localStorage.setItem('ufNumber', res.data.totalCount)
+    console.log(res.data.totalCount)
+  })
+}
+
 onMounted(() => {
   initializeThemeSwitcher()
+  getUnfinishedNUmber()
 })
 </script>
 
